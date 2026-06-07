@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมส่ง Flex Message มือโปร</title>
+    <!-- 1. ดึง LINE LIFF SDK มาใช้งาน -->
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background-color: #f3f3f3; }
+        .btn { background-color: #06C755; color: white; border: none; padding: 15px 30px; font-size: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background-color: #05b04b; }
+    </style>
+</head>
+<body>
+
+    <h2>ส่ง Flex Message เข้าแชทเพื่อนหรือกลุ่ม</h2>
+    <p>คลิกปุ่มด้านล่างเพื่อเลือกผู้รับและส่งข้อความ</p>
+    
+    <!-- ปุ่มสำหรับกดส่ง -->
+    <button class="btn" id="shareBtn" onclick="sendFlex()">คลิกเพื่อเลือกเพื่อนและส่ง</button>
+
+    <script>
+        // 2. สั่งให้ LIFF ทำงานเมื่อเปิดหน้าเว็บ
+        async function main() {
+            await liff.init({ liffId: "ใส่_LIFF_ID_ของคุณที่นี่" }); // เดี๋ยวเราจะเอา ID มาใส่ใน Step 4
+            if (!liff.isLoggedIn()) {
+                liff.login(); // ถ้ายังไม่ได้ล็อกอิน ให้เด้งหน้าล็อกอิน LINE
+            }
+        }
+        main();
+
+        // 3. ฟังก์ชันส่งข้อความเมื่อกดปุ่ม
+        async function sendFlex() {
+            // ตรวจสอบว่าเปิดฟังก์ชัน ShareTargetPicker ได้หรือไม่
+            if (!liff.isApiAvailable('shareTargetPicker')) {
+                alert("กรุณาเปิดลิงก์นี้บนแอป LINE เท่านั้น หรือฟังก์ชันนี้ยังไม่เปิดใช้งาน");
+                return;
+            }
+
+            try {
+                // ส่งข้อความผ่าน ShareTargetPicker
+                const result = await liff.shareTargetPicker([
+                    {
+                        "type": "flex",
+                        "altText": "คุณได้รับข้อความพิเศษ", // ข้อความที่จะเด้งบน Notification ของเพื่อน
+                        "contents": 
+                        
+                        // --- นำโค้ด JSON จาก Step 1 มาวางทับตั้งแต่ตรงนี้ ---
+                        {
+                          "type": "bubble",
+                          "body": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                              {
+                                "type": "text",
+                                "text": "สวัสดีครับนี่คือ Flex Message ของผม!",
+                                "weight": "bold",
+                                "size": "md"
+                              }
+                            ]
+                          }
+                        }
+                        // --- สิ้นสุดการวาง JSON ---
+
+                    }
+                ]);
+
+                if (result) {
+                    alert("ส่งข้อความสำเร็จแล้ว!");
+                    liff.closeWindow(); // ส่งเสร็จแล้วให้ปิดหน้าต่างเว็บทันที
+                } else {
+                    console.log("ผู้ใช้ยกเลิกการส่ง");
+                }
+            } catch (error) {
+                console.error("เกิดข้อผิดพลาด:", error);
+                alert("ส่งไม่สำเร็จ: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
