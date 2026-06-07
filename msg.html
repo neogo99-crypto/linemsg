@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIFF Flex Message Sender Pro</title>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #f4f6f9; 
+            margin: 0; 
+            padding: 20px; 
+            color: #333;
+        }
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 30px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+        }
+        h2 { text-align: center; color: #06C755; margin-top: 0; }
+        p { text-align: center; color: #666; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #444; }
+        
+        /* สไตล์ของ Textbox/Textarea */
+        textarea { 
+            width: 100%; 
+            height: 250px; 
+            padding: 12px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 8px; 
+            font-family: 'Courier New', Courier, monospace; 
+            font-size: 13px; 
+            resize: vertical;
+            background-color: #fafafa;
+        }
+        textarea:focus { border-color: #06C755; outline: none; background-color: #fff; }
+        
+        /* สไตล์ปุ่มกด */
+        .btn { 
+            width: 100%; 
+            background-color: #06C755; 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            font-size: 16px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: background 0.2s;
+            box-shadow: 0 4px 6px rgba(6, 199, 85, 0.2);
+        }
+        .btn:hover { background-color: #05b04b; }
+        .btn:disabled { background-color: #cccccc; cursor: not-allowed; box-shadow: none; }
+        
+        /* แสดงสถานะการโหลด */
+        #status { text-align: center; font-weight: bold; margin-top: 15px; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Flex Message Sender Pro</h2>
+    <p>วางโค้ด JSON ที่ได้จาก Flex Message Simulator ลงในช่องด้านล่าง แล้วกดส่งเข้าแชทเพื่อนหรือกลุ่มได้ทันที</p>
+    
+    <div class="form-group">
+        <label for="jsonInput">วางโค้ด JSON ของ Flex Message ที่นี่:</label>
+        <textarea id="jsonInput" placeholder='วางโค้ด JSON ที่คัดลอกมาจากปุ่ม "View JSON" ใน Simulator...'>{
+  "type": "bubble",
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "contents": [
+      {
+        "type": "text",
+        "text": "สวัสดีครับ! ยินดีต้อนรับสู่ระบบส่ง Flex",
+        "weight": "bold",
+        "size": "md",
+        "color": "#06C755"
+      },
+      {
+        "type": "text",
+        "text": "คุณสามารถแก้ไขข้อความนี้ในช่อง Textbox แล้วลองกดส่งใหม่ได้เลย",
+        "wrap": true,
+        "size": "sm",
+        "margin": "md"
+      }
+    ]
+  }
+}</textarea>
+    </div>
+    
+    <button class="btn" id="shareBtn" onclick="sendFlexMessages()" disabled>กำลังโหลดระบบ LINE LIFF...</button>
+    <div id="status"></div>
+</div>
+
+<script>
+    const LIFF_ID = "2010316123-yh98BsCV"; // ฝัง ID ของคุณเรียบร้อยแล้ว
+    const shareBtn = document.getElementById('shareBtn');
+    const statusDiv = document.getElementById('status');
+
+    // 1. เริ่มต้นระบบ LIFF เมื่อเปิดหน้าเว็บ
+    async function initLiff() {
+        try {
+            await liff.init({ liffId: LIFF_ID });
+            
+            if (!liff.isLoggedIn()) {
+                statusDiv.innerText = "กำลังนำคุณไปหน้าล็อกอิน LINE...";
+                liff.login();
+            } else {
+                // โหลดระบบเสร็จและล็อกอินแล้ว ให้เปิดใช้งานปุ่มกด
+                shareBtn.disabled = false;
+                shareBtn.innerText = "🚀 เลือกเพื่อน / กลุ่ม เพื่อส่งข้อความ";
+                statusDiv.innerText = "ระบบพร้อมใช้งาน (Logged in as: " + liff.getContext().userId.substring(0,6) + "...)";
+                statusDiv.style.color = "#06C755";
+            }
+        } catch (error) {
+            console.error("LIFF Init Error:", error);
+            statusDiv.innerText = "เกิดข้อผิดพลาดในการโหลด LIFF: " + error.message;
+            statusDiv.style.color = "red";
+        }
+    }
+    
+    // เรียกให้ฟังก์ชันทำงานทันทีที่โหลดหน้าเว็บ
+    initLiff();
+
+    // 2. ฟังก์ชันตรวจสอบโครงสร้าง JSON และส่งข้อความ
+    async function sendFlexMessages() {
+        const jsonRawInput = document.getElementById('jsonInput').value.trim();
+        
+        if (!jsonRawInput) {
+            alert("กรุณากรอกโค้ด JSON ก่อนครับ");
+            return;
+        }
+
+        let flexContents;
+        try {
+            // แปลง Text ให้เป็น Object JSON
+            flexContents = JSON.parse(jsonRawInput);
+        } catch (e) {
+            alert("รูปแบบโค้ด JSON ไม่ถูกต้อง! กรุณาตรวจสอบวงเล็บเปิด/ปิด หรือเครื่องหมายคอมมา (,)");
+            return;
+        }
+
+        // ตรวจสอบว่าเปิดแชร์ได้หรือไม่
+        if (!liff.isApiAvailable('shareTargetPicker')) {
+            alert("ไม่สามารถใช้ฟังก์ชัน ShareTargetPicker ได้ กรุณาเปิดลิงก์นี้ในแอป LINE บนมือถือ และตรวจสอบว่าเปิดเปิดใช้งานฟังก์ชันนี้ในหน้า Console แล้ว");
+            return;
+        }
+
+        shareBtn.disabled = true;
+        shareBtn.innerText = "กำลังประมวลผล...";
+
+        try {
+            // สั่งส่งข้อความโดยเอาตัวแปร flexContents ที่ผู้ใช้วางมาใส่ในช่อง contents ทันที
+            const result = await liff.shareTargetPicker([
+                {
+                    "type": "flex",
+                    "altText": "คุณได้รับ Flex Message รูปแบบใหม่", 
+                    "contents": flexContents
+                }
+            ]);
+
+            if (result) {
+                statusDiv.innerText = "ส่งข้อความสำเร็จเรียบร้อยแล้ว!";
+                statusDiv.style.color = "#06C755";
+                
+                // หน่วงเวลา 1.5 วินาทีแล้วปิดหน้าจอ LIFF อัตโนมัติ
+                setTimeout(() => {
+                    liff.closeWindow();
+                }, 1500);
+            } else {
+                statusDiv.innerText = "คุณยกเลิกการส่งข้อความ";
+                statusDiv.style.color = "#666";
+                shareBtn.disabled = false;
+                shareBtn.innerText = "🚀 เลือกเพื่อน / กลุ่ม เพื่อส่งข้อความ";
+            }
+        } catch (error) {
+            console.error("Share Error:", error);
+            alert("ส่งไม่สำเร็จเนื่องจากโครงสร้าง Flex ผิดพลาด: " + error.message);
+            shareBtn.disabled = false;
+            shareBtn.innerText = "🚀 เลือกเพื่อน / กลุ่ม เพื่อส่งข้อความ";
+            statusDiv.innerText = "เกิดข้อผิดพลาดในการส่ง";
+            statusDiv.style.color = "red";
+        }
+    }
+</script>
+</body>
+</html>
