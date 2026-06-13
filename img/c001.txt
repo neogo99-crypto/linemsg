@@ -1,0 +1,258 @@
+{
+  "type": "bubble",
+  "size": "giga",
+  "hero": {
+    "type": "image",
+    "url": "https://neogo99-crypto.github.io/linemsg/img/c001.jpeg",
+    "size": "full",
+    "aspectRatio": "4:3",
+    "aspectMode": "cover",
+    "action": {
+      "type": "uri",
+      "uri": "https://forms.gle/pA8V7HLdCrSyua2R9"
+    }
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "paddingAll": "xl",
+    "contents": [
+      {
+        "type": "text",
+        "text": "🤖 หลักสูตรฝึกอบรมฟรี",
+        "weight": "bold",
+        "color": "#1DB954",
+        "size": "sm"
+      },
+      {
+        "type": "text",
+        "text": "การประยุกต์ใช้ปัญญาประดิษฐ์ (AI) เพื่อพัฒนาระบบฝึกอบรมในสถานประกอบกิจการ",
+        "weight": "bold",
+        "size": "xl",
+        "wrap": true,
+        "margin": "xs",
+        "color": "#111111"
+      },
+      {
+        "type": "text",
+        "text": "รองรับการพัฒนาเศรษฐกิจ",
+        "weight": "bold",
+        "size": "md",
+        "color": "#555555",
+        "wrap": true
+      },
+      {
+        "type": "separator",
+        "margin": "xl",
+        "color": "#EEEEEE"
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "margin": "xl",
+        "spacing": "md",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "📅 วันที่:",
+                "color": "#17a2b8",
+                "size": "md",
+                "flex": 2,
+                "weight": "bold"
+              },
+              {
+                "type": "text",
+                "text": "25 - 26 ก.ค. และ 1 - 2 ส.ค. 2569 (เสาร์ - อาทิตย์)",
+                "wrap": true,
+                "color": "#333333",
+                "size": "md",
+                "flex": 6
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "⏰ เวลา:",
+                "color": "#17a2b8",
+                "size": "md",
+                "flex": 2,
+                "weight": "bold"
+              },
+              {
+                "type": "text",
+                "text": "08.30 - 17.00 น.",
+                "wrap": true,
+                "color": "#333333",
+                "size": "md",
+                "flex": 6
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "baseline",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "📍 สถานที่:",
+                "color": "#17a2b8",
+                "size": "md",
+                "flex": 2,
+                "weight": "bold"
+              },
+              {
+                "type": "text",
+                "text": "สถาบันพัฒนาฝีมือแรงงาน 1 สมุทรปราการ (อ.บางเสาธง)",
+                "wrap": true,
+                "color": "#333333",
+                "size": "md",
+                "flex": 6
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "separator",
+        "margin": "xl",
+        "color": "#EEEEEE"
+      },
+      {
+        "type": "box",
+        "layout": "vertical",
+        "margin": "xl",
+        "contents": [
+          {
+            "type": "text",
+            "text": "👨‍🎓 คุณสมบัติผู้สมัคร",
+            "weight": "bold",
+            "size": "md",
+            "color": "#111111",
+            "margin": "none"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "margin": "md",
+            "spacing": "sm",
+            "contents": [
+              {
+                "type": "text",
+                "text": "• อายุ 18 ปีขึ้นไป สุขภาพแข็งแรง เรียนครบหลักสูตร",
+                "size": "sm",
+                "color": "#666666",
+                "wrap": true
+              },
+              {
+                "type": "text",
+                "text": "• มีความรู้พื้นฐานคอมพิวเตอร์/โปรแกรมสำเร็จรูป",
+                "size": "sm",
+                "color": "#666666",
+                "wrap": true
+              },
+              {
+                "type": "text",
+                "text": "• มีมือถือ และ/หรือ โน้ตบุ๊ก ที่เชื่อมต่อเน็ตได้",
+                "size": "sm",
+                "color": "#666666",
+                "wrap": true
+              },
+              {
+                "type": "text",
+                "text": "• เป็นเจ้าหน้าที่ฝ่าย HR หรือฝ่ายพัฒนาบุคลากร",
+                "size": "sm",
+                "color": "#666666",
+                "wrap": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "separator",
+        "margin": "xl",
+        "color": "#EEEEEE"
+      },
+      {
+        "type": "box",
+        "layout": "horizontal",
+        "margin": "xl",
+        "contents": [
+          {
+            "type": "text",
+            "text": "📞 สอบถามเพิ่มเติม (กลุ่มงานพัฒนาฝีมือแรงงาน):",
+            "size": "sm",
+            "color": "#999999",
+            "wrap": true,
+            "flex": 4
+          },
+          {
+            "type": "text",
+            "text": "02-315-3799",
+            "size": "sm",
+            "color": "#007bff",
+            "weight": "bold",
+            "align": "end",
+            "flex": 2,
+            "action": {
+              "type": "uri",
+              "uri": "tel:023153799"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "spacing": "md",
+    "paddingAll": "xl",
+    "contents": [
+      {
+        "type": "button",
+        "style": "primary",
+        "height": "md",
+        "color": "#0056b3",
+        "action": {
+          "type": "uri",
+          "label": "📲 สมัครออนไลน์คลิกที่นี่",
+          "uri": "https://forms.gle/pA8V7HLdCrSyua2R9"
+        }
+      },
+      {
+        "type": "button",
+        "style": "secondary",
+        "height": "md",
+        "color": "#7cf07c",
+        "action": {
+          "type": "uri",
+          "label": "🗺️ แผนที่การเดินทาง",
+          "uri": "https://maps.app.goo.gl/BQuNYJ8rS7cbuKRU7"
+        },
+        "margin": "sm"
+      },
+      {
+        "type": "text",
+        "text": "🚀 รีบสมัครก่อนเต็มจำนวน!",
+        "size": "sm",
+        "color": "#b30000",
+        "align": "center",
+        "weight": "bold",
+        "margin": "sm"
+      }
+    ],
+    "flex": 0
+  }
+}
