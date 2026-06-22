@@ -1,0 +1,311 @@
+{
+  "type": "carousel",
+  "contents": [
+    {
+      "type": "bubble",
+      "size": "giga",
+      "hero": {
+        "type": "image",
+        "url": "https://www.mkrestaurant.com/public/uploads/promotion/images/00b9b2737ffcec208c26b997b3f77b4d.jpg",
+        "size": "full",
+        "aspectMode": "cover",
+        "aspectRatio": "1200:577"
+      },
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "md",
+        "paddingAll": "16px",
+        "contents": [
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#D70018",
+            "cornerRadius": "16px",
+            "paddingAll": "14px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "🔥 MK BUFFET 299.-",
+                "weight": "bold",
+                "size": "xxl",
+                "align": "center",
+                "color": "#FFFFFF"
+              },
+              {
+                "type": "text",
+                "text": "อัปเกรดใหม่ 33 เมนู คุ้มเกินคุ้ม",
+                "size": "md",
+                "align": "center",
+                "color": "#FFF4D6",
+                "margin": "sm"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#EAF7FF",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "⏰ ตั้งแต่ 8 มิ.ย. 69 - 2 ส.ค. 69",
+                "weight": "bold",
+                "size": "md",
+                "color": "#0077CC"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#FFF8E7",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "🦑 ซีฟู้ดใหม่ที่ทุกคนถามหา",
+                "weight": "bold",
+                "size": "md",
+                "color": "#D70018"
+              },
+              {
+                "type": "separator",
+                "margin": "sm"
+              },
+              {
+                "type": "text",
+                "text": "• แมงกะพรุน\n• ปลาหมึกกรอบ\n• หนวดปลาหมึก\n• ปลาแพนกาเซียสดอร์รี่",
+                "wrap": true,
+                "size": "sm",
+                "margin": "md",
+                "color": "#444444"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#F3FFF5",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "⏰ อิ่มไม่อั้น 90 นาที",
+                "weight": "bold",
+                "size": "md",
+                "color": "#00994D"
+              },
+              {
+                "type": "text",
+                "text": "ราคาเดิม ไม่มีบวกเพิ่ม\nกินเท่าไหร่จ่ายเท่านั้น",
+                "wrap": true,
+                "size": "sm",
+                "margin": "sm",
+                "color": "#444444"
+              }
+            ]
+          }
+        ]
+      },
+      "footer": {
+        "type": "box",
+        "layout": "vertical",
+        "paddingAll": "12px",
+        "contents": [
+          {
+            "type": "button",
+            "style": "primary",
+            "color": "#D70018",
+            "action": {
+              "type": "uri",
+              "label": "🍲 ดูรายละเอียดเพิ่มเติม",
+              "uri": "https://www.mkrestaurant.com/th/promotion/detail/mk-buffet-%E0%B8%84%E0%B8%B8%E0%B9%89%E0%B8%A1%E0%B9%80%E0%B8%81%E0%B8%B4%E0%B8%99%E0%B8%84%E0%B8%B8%E0%B9%89%E0%B8%A1-%E0%B8%AD%E0%B8%B1%E0%B8%9B%E0%B9%80%E0%B8%81%E0%B8%A3%E0%B8%94-33-%E0%B9%80%E0%B8%A1%E0%B8%99%E0%B8%B9"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "bubble",
+      "size": "giga",
+      "body": {
+        "type": "box",
+        "layout": "vertical",
+        "spacing": "md",
+        "paddingAll": "16px",
+        "contents": [
+          {
+            "type": "text",
+            "text": "⭐ เพิ่มความคุ้มได้อีก",
+            "weight": "bold",
+            "size": "xl",
+            "align": "center",
+            "color": "#D70018"
+          },
+          {
+            "type": "separator"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#FFF5EB",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "+59.- 🦐 กุ้งสด MK ไม่อั้น",
+                "weight": "bold",
+                "size": "md",
+                "color": "#FF6A00"
+              },
+              {
+                "type": "text",
+                "text": "เนื้อสด เด้ง อร่อยไม่จำกัด",
+                "size": "sm",
+                "margin": "sm",
+                "wrap": true
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#EAF7FF",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "+129.- 🌊 ซีฟู้ดพรีเมียมไม่อั้น",
+                "weight": "bold",
+                "size": "md",
+                "color": "#0077CC"
+              },
+              {
+                "type": "text",
+                "text": "🦐 กุ้งสด MK\n🦞 กุ้งแม่น้ำ\n🦑 ปลาหมึกสด",
+                "size": "sm",
+                "wrap": true,
+                "margin": "sm"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#FFF0F6",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "+59.- 🍦 ไอศกรีมไม่อั้น",
+                "weight": "bold",
+                "size": "md",
+                "color": "#D63384"
+              },
+              {
+                "type": "text",
+                "text": "🍫 ช็อกโกแลต\n🍓 สตรอว์เบอร์รี่\n🍦 วานิลลา",
+                "size": "sm",
+                "wrap": true,
+                "margin": "sm"
+              }
+            ]
+          },
+          {
+            "type": "separator",
+            "margin": "md"
+          },
+          {
+            "type": "text",
+            "text": "🎁 ฟรี! สิทธิพิเศษ",
+            "weight": "bold",
+            "size": "lg",
+            "align": "center",
+            "color": "#D70018",
+            "margin": "md"
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#FFF8E7",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "🥟 ซาลาเปาไส้ครีม",
+                "weight": "bold",
+                "size": "md",
+                "color": "#E67E22"
+              },
+              {
+                "type": "text",
+                "text": "ทานฟรีไม่อั้น ตลอดมื้อ",
+                "size": "sm",
+                "margin": "sm"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#F0FFF4",
+            "cornerRadius": "12px",
+            "paddingAll": "12px",
+            "contents": [
+              {
+                "type": "text",
+                "text": "🍜 บะหมี่หยก",
+                "weight": "bold",
+                "size": "md",
+                "color": "#28A745"
+              },
+              {
+                "type": "text",
+                "text": "ฟรีไม่อั้น เมื่อสั่งเป็ดย่างขนาดเล็กหรือใหญ่",
+                "wrap": true,
+                "size": "sm",
+                "margin": "sm"
+              }
+            ]
+          },
+          {
+            "type": "box",
+            "layout": "vertical",
+            "backgroundColor": "#D70018",
+            "cornerRadius": "16px",
+            "paddingAll": "14px",
+            "margin": "lg",
+            "contents": [
+              {
+                "type": "text",
+                "text": "🍲 MK BUFFET 299.-",
+                "weight": "bold",
+                "size": "xl",
+                "align": "center",
+                "color": "#FFFFFF"
+              },
+              {
+                "type": "text",
+                "text": "33 เมนู • ซีฟู้ดใหม่ • อิ่มไม่อั้น 90 นาที",
+                "size": "sm",
+                "align": "center",
+                "color": "#FFF4D6",
+                "margin": "sm",
+                "wrap": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
