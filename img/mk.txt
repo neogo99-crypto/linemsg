@@ -28,7 +28,7 @@
                 "type": "text",
                 "text": "🔥 MK BUFFET 299.-",
                 "weight": "bold",
-                "size": "xxl",
+                "size": "xl",
                 "align": "center",
                 "color": "#FFFFFF"
               },
