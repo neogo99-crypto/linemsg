@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>ลงทะเบียนสมาชิกกลุ่มพิเศษ</title>
+  <style>
+    body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 90%; max-width: 400px; text-align: center; }
+    h2 { color: #333; margin-bottom: 8px; }
+    p { color: #666; font-size: 14px; margin-bottom: 24px; }
+    .input-group { text-align: left; margin-bottom: 18px; }
+    label { font-size: 13px; color: #555; font-weight: bold; display: block; margin-bottom: 6px; }
+    input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 15px; background-color: #fafafa; }
+    input:disabled { background-color: #eeeeee; color: #666; }
+    button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; margin-top: 10px; }
+    button:hover { background-color: #218838; }
+    #loading { display: none; color: #007bff; font-weight: bold; margin-top: 15px; }
+    #result { margin-top: 20px; font-weight: bold; font-size: 15px; padding: 10px; border-radius: 6px; display: none; }
+    .success-box { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error-box { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+
+<div class="card">
+  <h2>🌟 ลงทะเบียนระบบพิเศษ (GitHub Host)</h2>
+  <p>กรุณาตรวจสอบข้อมูลและกดยืนยันเพื่อรับสิทธิ์สมาชิก</p>
+  
+  <div class="input-group">
+    <label>ชื่อผู้ใช้งาน LINE</label>
+    <input type="text" id="displayName" disabled placeholder="กำลังโหลดชื่อของคุณ...">
+  </div>
+  
+  <div class="input-group">
+    <label>รหัสเชิญลงทะเบียน (Invite Code)</label>
+    <input type="text" id="inviteCode" disabled placeholder="กำลังดึงรหัสเชิญ...">
+  </div>
+
+  <button id="btnSubmit" onclick="submitRegistration()" disabled>⏳ กำลังโหลดระบบ LINE Login...</button>
+  <div id="loading">กำลังบันทึกข้อมูล กรุณารอสักครู่...</div>
+  <div id="result"></div>
+</div>
+
+<script>
+  // ⚙️ ตั้งค่าลิงก์เชื่อมต่อหลังบ้าน Google Apps Script (ใส่ลิงก์ /exec ของคุณที่นี่)
+  const GAS_WEB_APP_URL = "ใส่_URL_WEB_APP_GAS_ของคุณตรงนี้/exec"; 
+
+  let currentUserId = "";
+  let currentDisplayName = "";
+
+  async function main() {
+    try {
+      await liff.init({ liffId: "2010508243-yDObVUty" });
+      
+      // 🔍 แกะรหัสเชิญผ่านระบบของ LINE LIFF
+      let codeParam = "";
+      const liffSearch = liff.getSearchInWindow();
+      if (liffSearch) {
+        const liffUrlParams = new URLSearchParams(liffSearch);
+        codeParam = liffUrlParams.get('code') || '';
+      }
+      if (!codeParam) {
+        const urlParams = new URLSearchParams(window.location.search);
+        codeParam = urlParams.get('code') || '';
+      }
+
+      if (codeParam) {
+        document.getElementById('inviteCode').value = codeParam;
+      } else {
+        showResult("❌ ไม่พบรหัสเชิญในลิงก์", false);
+        return;
+      }
+
+      // ตรวจสอบการล็อกอิน
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      } else {
+        const profile = await liff.getProfile();
+        currentUserId = profile.userId;
+        currentDisplayName = profile.displayName;
+        
+        document.getElementById('displayName').value = currentDisplayName;
+        
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = false;
+        btn.innerText = "✅ ยืนยันการลงทะเบียน";
+      }
+    } catch (error) {
+      showResult("❌ LINE Login ขัดข้อง: " + error, false);
+    }
+  }
+
+  // ส่งข้อมูลไปหา GAS หลังบ้านผ่านระบ Fetch API (CORS Safe)
+  function submitRegistration() {
+    const code = document.getElementById('inviteCode').value.trim();
+    
+    document.getElementById('btnSubmit').disabled = true;
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('result').style.display = 'none';
+
+    // ส่งข้อข้อมูลแบบ POST ไปหา GAS
+    fetch(GAS_WEB_APP_URL, {
+      method: "POST",
+      mode: "no-cors", // ใช้ no-cors เพื่อข้ามข้อจำกัดความปลอดภัยระหว่างเว็บ (Cross-Origin)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "register",
+        userId: currentUserId,
+        displayName: currentDisplayName,
+        code: code
+      })
+    })
+    .then(() => {
+      // เนื่องจากโหมด no-cors จะไม่ส่งผลลัพธ์กลับมาตรงๆ ให้เราตีต่างว่าสำเร็จ และให้ไปเช็กในชีต
+      document.getElementById('loading').style.display = 'none';
+      showResult("🎉 ส่งข้อมูลลงทะเบียนสำเร็จ! ระบบกำลังตรวจสอบและปิดหน้าต่างนี้...", true);
+      setTimeout(() => { liff.closeWindow(); }, 3000);
+    })
+    .catch(error => {
+      document.getElementById('loading').style.display = 'none';
+      showResult("❌ เกิดข้อผิดพลาดในการส่งข้อมูล: " + error, false);
+      document.getElementById('btnSubmit').disabled = false;
+    });
+  }
+
+  main();
+</script>
+</body>
+</html>
