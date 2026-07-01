@@ -207,45 +207,73 @@
   }
 
   // ฟังก์ชันยิงส่งข้อมูลข้ามค่ายไปหา Google Sheet (โหมด URL-Encoded หลบภัย CORS บล็อก)
-  function submitRegistration() {
-    const code = document.getElementById('inviteCode').value.trim();
+  // ฟังก์ชันส่งข้อมูลสมัครสมาชิกข้ามค่าย และตรวจสอบการแอดเพื่อนอัตโนมัติ
+function submitRegistration() {
+  const code = document.getElementById('inviteCode').value.trim();
+  
+  // 1. ล็อกปุ่มป้องกันการกดซ้ำ และแสดงสถานะกำลังโหลด
+  document.getElementById('btnSubmit').disabled = true;
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+
+  // 2. เตรียมข้อมูลแบบ URL-SearchParams (สไตล์ Form URL-Encoded เพื่อหลบ CORS บล็อก)
+  const searchParams = new URLSearchParams();
+  searchParams.append("action", "register");
+  searchParams.append("userId", currentUserId);
+  searchParams.append("displayName", currentDisplayName);
+  searchParams.append("code", code);
+
+  // 3. ยิงข้อมูลข้ามค่ายไปยังฝั่งเซิร์ฟเวอร์ Google Apps Script (GAS) หลังบ้านของคุณ
+  fetch(GAS_WEB_APP_URL, {
+    method: "POST",
+    mode: "no-cors", // ใช้โหมดไม่ตรวจสอบสิทธิ์ความปลอดภัยข้ามเว็บ เพื่อความเสถียรของหน้าเว็บหน้าบ้าน
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: searchParams.toString()
+  })
+  .then(async () => {
+    // ซ่อนข้อความโหลดระบบฐานข้อมูล
+    document.getElementById('loading').style.display = 'none';
     
-    // ล็อกปุ่มป้องกันการกดซ้ำ และแสดงสถานะกำลังโหลด
-    document.getElementById('btnSubmit').disabled = true;
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('result').style.display = 'none';
-
-    // เตรียมฟอร์มข้อมูลแบบมาตรฐานเพื่อคุยกับ doPost(e)
-    const searchParams = new URLSearchParams();
-    searchParams.append("action", "register");
-    searchParams.append("userId", currentUserId);
-    searchParams.append("displayName", currentDisplayName);
-    searchParams.append("code", code);
-
-    // ยิงข้อมูลข้ามค่ายไปยังฝั่งเซิร์ฟเวอร์ Google Apps Script
-    fetch(GAS_WEB_APP_URL, {
-      method: "POST",
-      mode: "no-cors", // ใช้โหมดไม่ตรวจสอบสิทธิ์ความปลอดภัยข้ามเว็บ เพื่อไม่ให้สคริปต์หน้าบ้านค้างพัง
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: searchParams.toString()
-    })
-    .then(() => {
-      document.getElementById('loading').style.display = 'none';
-      showResult("🎉 ส่งข้อมูลลงทะเบียนสำเร็จ! ระบบบันทึกข้อมูลเรียบร้อยแล้ว หน้าต่างนี้จะปิดลงอัตโนมัติ...", true);
+    try {
+      // 4. ตรวจสอบสถานะว่าผู้ใช้คนนี้ได้แอดเพื่อนกับบัญชี LINE OA (@913zomee) แล้วหรือยัง
+      const friendship = await liff.getFriendship();
       
-      // หน่วงเวลา 2.5 วินาทีเพื่อให้ผู้ใช้อ่านผลลัพธ์ แล้วสั่งปิดหน้าต่างแอป LIFF ในไลน์ทันที
-      setTimeout(() => { 
-        liff.closeWindow(); 
-      }, 2500);
-    })
-    .catch(error => {
-      document.getElementById('loading').style.display = 'none';
-      showResult("❌ เกิดข้อผิดพลาดในระบบส่งข้อมูล: " + error, false);
-      document.getElementById('btnSubmit').disabled = false;
-    });
-  }
+      if (!friendship.friendFlag) {
+        // กรณีที่ 4.1: ยังไม่ได้เป็นเพื่อน (หรือผู้ใช้เผลอกดติ๊กออกในหน้าแรก)
+        showResult("🎉 ลงทะเบียนสำเร็จ! ระบบกำลังนำคุณไปยังหน้าเพิ่มเพื่อนเพื่อเปิดใช้งานห้องแชท...", true);
+        
+        // หน่วงเวลา 2.5 วินาทีให้ผู้ใช้อ่านข้อความ แล้วดึงไปยังลิงก์แอดเพื่อนของบอททันที
+        setTimeout(() => {
+          window.location.href = "https://line.me/R/ti/p/@913zomee";
+        }, 2500);
+        
+      } else {
+        // กรณีที่ 4.2: เป็นเพื่อนกับบอทในระบบเรียบร้อยอยู่แล้ว
+        showResult("🎉 บันทึกข้อมูลลงทะเบียนสำเร็จ! ระบบกำลังปิดหน้าต่างนี้อัตโนมัติ...", true);
+        
+        // หน่วงเวลา 2.5 วินาที แล้วสั่งปิดหน้าต่างแอป LIFF ในหน้าแชท LINE ทันที
+        setTimeout(() => {
+          liff.closeWindow();
+        }, 2500);
+      }
+    } catch (friendError) {
+      // แผนสำรองฉุกเฉิน: หากระบบตรวจสถานะเพื่อนผ่าน SDK ขัดข้อง ให้โยนไปหน้าแอดเพื่อนเพื่อความชัวร์ไว้ก่อน
+      console.error("Friendship Error:", friendError);
+      showResult("🎉 ลงทะเบียนสำเร็จ! ระบบกำลังตรวจสอบช่องทางติดต่อบอท...", true);
+      setTimeout(() => {
+        window.location.href = "https://line.me/R/ti/p/@913zomee";
+      }, 2000);
+    }
+  })
+  .catch(error => {
+    // 5. จัดการกรณีระบบเน็ตเวิร์กหรือเซิร์ฟเวอร์พัง
+    document.getElementById('loading').style.display = 'none';
+    showResult("❌ เกิดข้อผิดพลาดในระบบส่งข้อมูล: " + error, false);
+    document.getElementById('btnSubmit').disabled = false; // ปลดล็อกปุ่มให้กดส่งใหม่ได้
+  });
+}
 
   // ฟังก์ชันเสริมสำหรับควบคุมกล่องแสดงข้อความแจ้งเตือนสถานะ
   function showResult(message, isSuccess) {
