@@ -70,57 +70,49 @@
     
     <div class="form-group">
         <label for="jsonInput">วางโค้ด JSON ของ Flex Message ที่นี่:</label>
-        <textarea id="jsonInput" placeholder='วางโค้ด JSON ที่คัดลอกมาจากปุ่ม "View JSON" ใน Simulator...'>{
-  "type": "carousel",
-  "contents": [
-    {
-      "type": "bubble",
-      "hero": {
-        "type": "image",
-        "url": "https://images.unsplash.com/photo-1563720223185-11003d516935?w=500",
-        "size": "full",
-        "aspectRatio": "20:13",
-        "aspectMode": "cover"
-      },
-      "body": {
-        "type": "box",
-        "layout": "vertical",
-        "contents": [
-          {
-            "type": "text",
-            "text": "บริการดูแลรถยนต์ไฟฟ้า",
-            "weight": "bold",
-            "size": "xl"
-          },
-          {
-            "type": "text",
-            "text": "แพ็กเกจตรวจเช็กสภาพรถ EV ครบวงจร โดยช่างผู้ชำนาญการ",
-            "margin": "md",
-            "wrap": true,
-            "color": "#666666",
-            "size": "sm"
-          }
-        ]
-      },
-      "footer": {
-        "type": "box",
-        "layout": "vertical",
-        "spacing": "sm",
-        "contents": [
-          {
-            "type": "button",
-            "style": "primary",
-            "action": {
-              "type": "uri",
-              "label": "เว็บไซต์",
-              "uri": "https://example.com/ev-care"
-            },
-            "color": "#1DB954"
-          }
-        ]
+        <textarea id="jsonInput" placeholder='วางโค้ด JSON ที่คัดลอกมาจากปุ่ม "View JSON" ใน Simulator...'>
+            {
+  "type": "bubble",
+  "size": "mega",
+  "hero": {
+    "type": "image",
+    "url": "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=1000&auto=format&fit=crop&q=80",
+    "size": "full",
+    "aspectRatio": "20:11",
+    "aspectMode": "cover"
+  },
+  "body": {
+    "type": "box",
+    "layout": "vertical",
+    "backgroundColor": "#F4F9FD",
+    "contents": [],
+    "paddingAll": "xxl"
+  },
+  "footer": {
+    "type": "box",
+    "layout": "vertical",
+    "backgroundColor": "#F4F9FD",
+    "contents": [
+      {
+        "type": "button",
+        "action": {
+          "type": "uri",
+          "label": "Watch Video",
+          "uri": "https://www.youtube.com"
+        },
+        "style": "primary",
+        "color": "#3A9BDc",
+        "height": "md"
       }
+    ],
+    "paddingAll": "xxl",
+    "paddingTop": "none"
+  },
+  "styles": {
+    "footer": {
+      "separator": false
     }
-  ]
+  }
 }</textarea>
     </div>
     
