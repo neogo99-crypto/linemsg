@@ -156,7 +156,6 @@
                                     "type": "box",
                                     "layout": "horizontal",
                                     "contents": [
-                                        // แก้ไขโดยถอน property 'opacity' ออก แล้วใช้สีขาวอมเทา (#E2E8F0) เพื่อให้สีดูโปร่งและผ่าน Error บน Simulator
                                         { "type": "text", "text": "COURSE INFO", "color": "#E2E8F0", "size": "xxs", "weight": "bold", "flex": 1 },
                                         { "type": "text", "text": `หน้า ${page + 1}/${totalPages}`, "color": "#E2E8F0", "size": "xxs", "align": "end", "flex": 1 }
                                     ]
@@ -166,23 +165,24 @@
                                     "type": "box",
                                     "layout": "horizontal",
                                     "margin": "md",
-                                    "spacing": "xs",
+                                    "spacing": "sm",
                                     "contents": [
-                                        { "type": "icon", "url": "https://cdn-icons-png.flaticon.com/512/535/535239.png", "size": "sm" },
-                                        { "type": "text", "text": data.course.place || "-", "color": "#E2E8F0", "size": "xs", "wrap": true }
+                                        // ปรับเปลี่ยนจากก้าน icon เดิม มาใช้คอมโพเนนต์ text ร่วมกับ Emoji เพื่อให้ถูกหลักโครงสร้างของ LINE 100%
+                                        { "type": "text", "text": "📍", "size": "sm", "flex": 0 },
+                                        { "type": "text", "text": data.course.place || "-", "color": "#E2E8F0", "size": "xs", "wrap": true, "flex": 1 }
                                     ]
                                 },
                                 {
                                     "type": "box",
                                     "layout": "horizontal",
                                     "margin": "sm",
-                                    "spacing": "xs",
+                                    "spacing": "sm",
                                     "contents": [
-                                        { "type": "icon", "url": "https://cdn-icons-png.flaticon.com/512/747/747310.png", "size": "sm" },
+                                        { "type": "text", "text": "📅", "size": "sm", "flex": 0 },
                                         { "type": "text", "text": data.course.date || "-", "color": "#E2E8F0", "size": "xs", "flex": 0 },
-                                        { "type": "text", "text": " | ", "color": "#A0AEC0", "size": "xs", "flex": 0 },
-                                        { "type": "icon", "url": "https://cdn-icons-png.flaticon.com/512/2088/2088617.png", "size": "sm" },
-                                        { "type": "text", "text": data.course.time || "-", "color": "#E2E8F0", "size": "xs" }
+                                        { "type": "text", "text": "  |  ", "color": "#A0AEC0", "size": "xs", "flex": 0 },
+                                        { "type": "text", "text": "🕒", "size": "sm", "flex": 0 },
+                                        { "type": "text", "text": data.course.time || "-", "color": "#E2E8F0", "size": "xs", "flex": 1 }
                                     ]
                                 }
                             ]
