@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flex Message Generator Expert</title>
+    <!-- ใช้ Tailwind CSS เพื่อความสวยงามระดับมืออาชีพ -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -13,12 +14,15 @@
 <body class="bg-slate-50 min-h-screen py-10 px-4">
 
     <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+        <!-- Header -->
         <div class="bg-slate-900 px-8 py-6 text-white text-center">
             <h1 class="text-2xl font-bold tracking-wide">Course Flex Message Generator</h1>
             <p class="text-slate-400 text-sm mt-1">ดึงข้อมูลจาก Google Sheets และสร้างเป็น LINE Flex Message JSON</p>
         </div>
 
+        <!-- Main Content -->
         <div class="p-8 space-y-6">
+            <!-- Configuration Box -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-xl border border-slate-200">
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-2">Google Web App URL</label>
@@ -35,6 +39,7 @@
                 </div>
             </div>
 
+            <!-- Action Box -->
             <div class="flex flex-col sm:flex-row gap-4 items-end bg-white p-4 border border-dashed border-slate-200 rounded-xl">
                 <div class="flex-1 w-full">
                     <label class="block text-sm font-medium text-slate-700 mb-2">กรอกรหัสหลักสูตร (Code)</label>
@@ -45,6 +50,7 @@
                 </button>
             </div>
 
+            <!-- Result Box -->
             <div class="space-y-2">
                 <div class="flex justify-between items-center">
                     <label class="block text-sm font-semibold text-slate-700">ผลลัพธ์ LINE Flex Message JSON (พร้อมนำไปวางใน Simulator)</label>
@@ -55,8 +61,8 @@
         </div>
     </div>
 
+    <!-- JavaScript Logic -->
     <script>
-        // นิยาม Configuration ของ Theme สีตามที่ผู้ใช้กำหนด (ใช้กับองค์ประกอบของ Flex Message)
         const themeConfig = {
             blue: { main: "#1E40AF", sub: "#EFF6FF", text: "#1E3A8A", badge: "#3B82F6", oddRow: "#F0F4F8", evenRow: "#FFFFFF" },
             green: { main: "#065F46", sub: "#ECFDF5", text: "#064E3B", badge: "#10B981", oddRow: "#E6F4EA", evenRow: "#FFFFFF" },
@@ -80,13 +86,11 @@
                 return;
             }
 
-            // แสดงสถานะการทำงาน (Loading State)
             btnSubmit.disabled = true;
             btnSubmit.innerText = 'กำลังประมวลผล...';
             jsonOutput.value = '// กำลังดาวน์โหลดและคำนวณโครงสร้าง Flex Message...';
 
             try {
-                // เรียกไปยัง Apps Script API
                 const response = await fetch(`${webAppUrl}?code=${encodeURIComponent(courseCode)}`);
                 const data = await response.json();
 
@@ -97,23 +101,19 @@
                     return;
                 }
 
-                // เริ่มกระบวนการสร้างโครงสร้าง Flex Message JSON (Carousel Type รองรับ Slide Card)
                 const theme = themeConfig[currentTheme];
                 const members = data.members || [];
                 const cards = [];
                 const itemsPerPage = 10;
                 const totalPages = Math.max(1, Math.ceil(members.length / itemsPerPage));
 
-                // ทำการวนลูปแบ่งกลุ่มรายชื่อ หน้าละ 10 คน ออกเป็นแต่ละการ์ด (Bubble)
                 for (let page = 0; page < totalPages; page++) {
                     const startIndex = page * itemsPerPage;
                     const endIndex = Math.min(startIndex + itemsPerPage, members.length);
                     const pageMembers = members.slice(startIndex, endIndex);
 
-                    // สร้างแถวรายชื่อของหน้าปัจจุบัน
                     const tableRowsJson = [];
 
-                    // ถ้ามีรายชื่อผู้สมัครเรียน
                     if (pageMembers.length > 0) {
                         pageMembers.forEach((member, idx) => {
                             const globalIndex = startIndex + idx + 1;
@@ -133,7 +133,6 @@
                             });
                         });
                     } else {
-                        // กรณีไม่มีผู้เรียนในหลักสูตรนี้เลย
                         tableRowsJson.push({
                             "type": "box",
                             "layout": "vertical",
@@ -144,7 +143,6 @@
                         });
                     }
 
-                    // โครงสร้าง Bubble Card (ขนาด mega) ของหน้านั้นๆ
                     const bubble = {
                         "type": "bubble",
                         "size": "mega",
@@ -158,8 +156,9 @@
                                     "type": "box",
                                     "layout": "horizontal",
                                     "contents": [
-                                        { "type": "text", "text": "COURSE INFO", "color": "#FFFFFF", "size": "xxs", "weight": "bold", "opacity": "0.7", "flex": 1 },
-                                        { "type": "text", "text": `หน้า ${page + 1}/${totalPages}`, "color": "#FFFFFF", "size": "xxs", "align": "end", "opacity": "0.8", "flex": 1 }
+                                        // แก้ไขโดยถอน property 'opacity' ออก แล้วใช้สีขาวอมเทา (#E2E8F0) เพื่อให้สีดูโปร่งและผ่าน Error บน Simulator
+                                        { "type": "text", "text": "COURSE INFO", "color": "#E2E8F0", "size": "xxs", "weight": "bold", "flex": 1 },
+                                        { "type": "text", "text": `หน้า ${page + 1}/${totalPages}`, "color": "#E2E8F0", "size": "xxs", "align": "end", "flex": 1 }
                                     ]
                                 },
                                 { "type": "text", "text": data.course.name || "-", "weight": "bold", "color": "#FFFFFF", "size": "lg", "margin": "md", "wrap": true },
@@ -218,13 +217,11 @@
                     cards.push(bubble);
                 }
 
-                // ครอบชิ้นงานทั้งหมดด้วย Wrapper ประเภท Carousel
                 const flexMessageObj = {
                     "type": "carousel",
                     "contents": cards
                 };
 
-                // พ่นผลลัพธ์เป็น JSON ลงใน Textarea
                 jsonOutput.value = JSON.stringify(flexMessageObj, null, 2);
 
             } catch (err) {
