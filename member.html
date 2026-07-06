@@ -126,9 +126,10 @@
                                 "backgroundColor": rowBgColor,
                                 "paddingAll": "xs",
                                 "contents": [
+                                    // ขยายสัดส่วนของแถวรายชื่อคอลัมน์แรกเป็น flex: 2 ให้เท่ากับหัวตาราง
                                     { "type": "text", "text": String(globalIndex), "weight": "bold", "size": "xs", "color": "#4A5568", "flex": 2, "align": "center" },
                                     { "type": "text", "text": member.name, "size": "xs", "color": "#2D3748", "flex": 4 },
-                                    { "type": "text", "text": member.surname, "size": "xs", "color": "#2D3748", "flex": 4 }
+                                    { "type": "text", "text": member.surname, "size": "xs", "color": "#2D3748", "flex": 5 }
                                 ]
                             });
                         });
@@ -167,7 +168,6 @@
                                     "margin": "md",
                                     "spacing": "sm",
                                     "contents": [
-                                        // ปรับเปลี่ยนจากก้าน icon เดิม มาใช้คอมโพเนนต์ text ร่วมกับ Emoji เพื่อให้ถูกหลักโครงสร้างของ LINE 100%
                                         { "type": "text", "text": "📍", "size": "sm", "flex": 0 },
                                         { "type": "text", "text": data.course.place || "-", "color": "#E2E8F0", "size": "xs", "wrap": true, "flex": 1 }
                                     ]
@@ -199,9 +199,10 @@
                                     "backgroundColor": theme.sub,
                                     "paddingAll": "xs",
                                     "contents": [
+                                        // ปรับความกว้างคอลัมน์ ลำดับ เป็น flex: 2 เพื่อให้คำว่า "ลำดับ" แสดงผลได้ครบถ้วนสวยงาม
                                         { "type": "text", "text": "ลำดับ", "weight": "bold", "size": "xs", "color": theme.text, "flex": 2, "align": "center" },
                                         { "type": "text", "text": "ชื่อ", "weight": "bold", "size": "xs", "color": theme.text, "flex": 4 },
-                                        { "type": "text", "text": "นามสกุล", "weight": "bold", "size": "xs", "color": theme.text, "flex": 4 }
+                                        { "type": "text", "text": "นามสกุล", "weight": "bold", "size": "xs", "color": theme.text, "flex": 5 }
                                     ]
                                 },
                                 {
