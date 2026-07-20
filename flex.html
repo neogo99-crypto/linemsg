@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Flex Message Simulator & Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Navigation Bar -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i data-lucide="layout"></i>
+                <h1>LINE Flex Message Editor</h1>
+            </div>
+            <div class="actions-area">
+                <button id="btnToggleFrame" class="btn btn-secondary">
+                    <i data-lucide="smartphone"></i> Toggle Frame
+                </button>
+                <button id="btnExportJson" class="btn btn-primary">
+                    <i data-lucide="code"></i> Export JSON
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace Split Screen -->
+        <main class="app-workspace">
+            <!-- Left Panel: Live Simulator Preview -->
+            <section class="preview-panel">
+                <div id="simulatorContainer" class="mobile-frame">
+                    <div class="mobile-statusbar">
+                        <span class="time">09:41</span>
+                        <div class="status-icons">
+                            <i data-lucide="signal" class="icon-sm"></i>
+                            <i data-lucide="wifi" class="icon-sm"></i>
+                            <i data-lucide="battery" class="icon-sm"></i>
+                        </div>
+                    </div>
+                    <div class="mobile-chat-body">
+                        <!-- LINE Flex Message Container Wrapper -->
+                        <div id="flexMessageRoot" class="flex-message-root">
+                            <!-- Dynamically Rendered by app.js -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: Tree Hierarchy & Component Parameter Controls -->
+            <section class="editor-panel">
+                <div class="editor-section">
+                    <div class="section-header">
+                        <i data-lucide="settings"></i>
+                        <h2>Bubble Container Settings</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="bubbleDirection">Direction</label>
+                            <select id="bubbleDirection">
+                                <option value="ltr">Left to Right (LTR)</option>
+                                <option value="rtl">Right to Left (RTL)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="bubbleBgColor">Background Color</label>
+                            <div class="color-picker-group">
+                                <input type="text" id="bubbleBgColor" value="#FFFFFF" placeholder="#FFFFFF">
+                                <input type="color" id="bubbleBgColorPicker" value="#ffffff">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="editor-section">
+                    <div class="section-header">
+                        <i data-lucide="layers"></i>
+                        <h2>Body Box Tree Layout</h2>
+                    </div>
+                    <div class="tree-actions">
+                        <button id="btnAddText" class="btn btn-sm btn-outline"><i data-lucide="plus"></i> Add Text</button>
+                        <button id="btnAddButton" class="btn btn-sm btn-outline"><i data-lucide="plus"></i> Add Button</button>
+                        <button id="btnAddImage" class="btn btn-sm btn-outline"><i data-lucide="plus"></i> Add Image</button>
+                    </div>
+                    <!-- Node Controls dynamically injected here based on selection -->
+                    <div id="componentTreeContainer" class="tree-container"></div>
+                    <div id="propertiesEditor" class="properties-editor"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Export JSON Modal Frame Component -->
+    <div id="jsonModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Production-Ready JSON Payload</h3>
+                <button id="btnCloseModal" class="btn-close"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body">
+                <pre><code id="jsonPreOutput"></code></pre>
+            </div>
+            <div class="modal-footer">
+                <button id="btnCopyClipboard" class="btn btn-primary">
+                    <i data-lucide="copy"></i> Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
