@@ -2,7 +2,7 @@
  * LINE Flex Message Editor State & Render Engine
  */
 
-// 1. App State Definition
+// 1. App State Definition (Fixed Button Property Schema)
 const state = {
     bubble: {
         type: "bubble",
@@ -18,7 +18,7 @@ const state = {
             contents: [
                 { id: "1", type: "text", text: "Welcome to LINE Flex", weight: "bold", size: "xl", color: "#111111" },
                 { id: "2", type: "text", text: "This is a real-time production simulator built using vanilla JavaScript.", wrap: true, color: "#666666", size: "sm" },
-                { id: "3", type: "button", text: "Action Button", color: "#06C755" }
+                { id: "3", type: "button", label: "Action Button", color: "#06C755", action: { type: "uri", label: "action", uri: "https://line.me" } }
             ]
         }
     },
@@ -75,7 +75,7 @@ function createSimulatedComponent(node) {
             return txt;
         case "button":
             const btn = document.createElement("div");
-            btn.innerText = node.text || "Button";
+            btn.innerText = node.label || "Button";
             btn.style.backgroundColor = node.color || "#06c755";
             btn.style.color = "#FFFFFF";
             btn.style.padding = "10px";
@@ -152,7 +152,7 @@ function renderPropertiesEditor() {
     wrapper.className = "form-grid";
     wrapper.style.marginTop = "16px";
 
-    // Common Text Label Property Field
+    // Text Component Logic
     if (activeNode.text !== undefined) {
         wrapper.appendChild(createField("Label Text", "text", activeNode.text, (val) => {
             activeNode.text = val;
@@ -160,7 +160,16 @@ function renderPropertiesEditor() {
         }));
     }
 
-    // Common Color Input Component with integrated hex conversion picker logic
+    // Button Component Logic (Fixed standard attribute mapping)
+    if (activeNode.label !== undefined) {
+        wrapper.appendChild(createField("Button Label", "text", activeNode.label, (val) => {
+            activeNode.label = val;
+            if(activeNode.action) activeNode.action.label = val;
+            renderPreview();
+        }));
+    }
+
+    // Common Color Input Component
     if (activeNode.color !== undefined) {
         wrapper.appendChild(createColorPickerField("Component Color", activeNode.color, (val) => {
             activeNode.color = val;
@@ -259,9 +268,8 @@ function setupGlobalEventListeners() {
     // Exporter Payload Modal Pipeline
     const modal = document.getElementById("jsonModal");
     document.getElementById("btnExportJson").addEventListener("click", () => {
-        // Build payload matching strict production LINE format definitions
         const cleanPayload = JSON.parse(JSON.stringify(state.bubble));
-        cleanPayload.body.contents.forEach(n => delete n.id); // Strip developer local runtime identifiers
+        cleanPayload.body.contents.forEach(n => delete n.id); // Clear runtime frontend id property
         
         document.getElementById("jsonPreOutput").innerText = JSON.stringify(cleanPayload, null, 2);
         modal.classList.add("open");
@@ -288,8 +296,9 @@ function addNode(type) {
         newNode.color = "#333333";
         newNode.size = "md";
     } else if (type === "button") {
-        newNode.text = "Click Event";
+        newNode.label = "Click Event";
         newNode.color = "#06C755";
+        newNode.action = { type: "uri", label: "action", uri: "https://line.me" };
     }
     state.bubble.body.contents.push(newNode);
     state.selectedNodeId = id;
