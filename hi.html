@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LINE Flex Message Generator with Gemini AI</title>
+    <!-- Google Fonts & Tailwind CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-4xl mx-auto space-y-8">
+        <!-- Header -->
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl flex items-center justify-center gap-2">
+                💬 LINE Flex Message Generator
+            </h1>
+            <p class="mt-2 text-sm text-gray-600">
+                สร้าง JSON Flex Message อัตโนมัติด้วยพลังของ Gemini AI
+            </p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100">
+            <form id="flexForm" onsubmit="generateFlexMessage(event)" class="space-y-6">
+                <!-- API Key Input -->
+                <div>
+                    <label for="apiKey" class="block text-sm font-medium text-gray-700 mb-1">
+                        Gemini API Key <span class="text-red-500">*</span>
+                    </label>
+                    <input type="password" id="apiKey" required placeholder="AIzaSy..." class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                    <p class="mt-1 text-xs text-gray-400">
+                        * สามารถขอรับ API Key ได้ฟรีจาก Google AI Studio
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Day Select -->
+                    <div>
+                        <label for="daySelect" class="block text-sm font-medium text-gray-700 mb-1">
+                            วันประจำสัปดาห์ <span class="text-red-500">*</span>
+                        </label>
+                        <select id="daySelect" required class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors bg-white">
+                            <option value="" disabled selected>-- เลือกวัน --</option>
+                            <option value="วันอาทิตย์">วันอาทิตย์</option>
+                            <option value="วันจันทร์">วันจันทร์</option>
+                            <option value="วันอังคาร">วันอังคาร</option>
+                            <option value="วันพุธ">วันพุธ</option>
+                            <option value="วันพฤหัสบดี">วันพฤหัสบดี</option>
+                            <option value="วันศุกร์">วันศุกร์</option>
+                            <option value="วันเสาร์">วันเสาร์</option>
+                        </select>
+                    </div>
+
+                    <!-- Mood & Tone -->
+                    <div>
+                        <label for="moodTone" class="block text-sm font-medium text-gray-700 mb-1">
+                            Mood & Tone <span class="text-xs text-gray-400">(ไม่ระบุก็ได้)</span>
+                        </label>
+                        <input type="text" id="moodTone" placeholder="เช่น สดใส, Luxury, พาสเทล" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                    </div>
+                </div>
+
+                <!-- Image URL -->
+                <div>
+                    <label for="imageUrl" class="block text-sm font-medium text-gray-700 mb-1">
+                        URL รูปภาพ Header <span class="text-red-500">*</span>
+                    </label>
+                    <input type="url" id="imageUrl" required placeholder="https://example.com/image.jpg" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submitBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-lg shadow transition-all duration-200 flex items-center justify-center gap-2">
+                    <span id="btnText">✨ ประมวลผลด้วย Gemini AI</span>
+                    <span id="btnSpinner" class="hidden">
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Output Section -->
+        <div id="outputContainer" class="bg-white p-6 sm:p-8 rounded-2xl shadow-md border border-gray-100 hidden space-y-4">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                    📦 ผลลัพธ์ JSON Flex Message
+                </h2>
+                <button onclick="copyToClipboard()" id="copyBtn" class="bg-gray-800 hover:bg-gray-900 text-white text-sm py-2 px-4 rounded-md transition-colors flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    <span>คัดลอก JSON</span>
+                </button>
+            </div>
+
+            <!-- Textarea แสดงผลลัพธ์จาก Gemini -->
+            <textarea id="jsonOutput" rows="18" readonly class="w-full p-4 bg-gray-900 text-emerald-400 font-mono text-xs rounded-lg border border-gray-800 focus:outline-none resize-y leading-relaxed"></textarea>
+            
+            <p class="text-xs text-gray-500 text-right">
+                * สามารถคัดลอกโค้ด JSON นี้ไปวางใน <a href="https://developers.line.biz/flex-simulator/" target="_blank" class="text-emerald-600 underline hover:text-emerald-700">LINE Flex Message Simulator</a> ได้ทันที
+            </p>
+        </div>
+    </div>
+
+    <!-- JavaScript สำหรับส่ง API Request -->
+    <script>
+        async function generateFlexMessage(event) {
+            event.preventDefault();
+
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const day = document.getElementById('daySelect').value;
+            const url = document.getElementById('imageUrl').value.trim();
+            const mood = document.getElementById('moodTone').value.trim();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const outputContainer = document.getElementById('outputContainer');
+            const jsonOutput = document.getElementById('jsonOutput');
+
+            // เปลี่ยนสถานะปุ่มเป็น Loading
+            submitBtn.disabled = true;
+            btnText.textContent = "กำลังประมวลผลด้วย Gemini...";
+            btnSpinner.classList.remove('hidden');
+
+            // ประกอบ Master Prompt
+            const promptText = `# MASTER TEMPLATE PROMPT
+# Professional LINE Flex Message Designer v2.0
+
+Role:
+คุณคือ Professional LINE Flex Message Designer ระดับโลก ผู้เชี่ยวชาญด้าน LINE Official Account, LINE Messaging API, UX/UI Design และ Graphic Design มีความสามารถในการออกแบบ Flex Message ให้มีความสวยงาม ทันสมัย และเป็นไปตามมาตรฐานของ LINE Flex Message Specification
+
+ภารกิจของคุณคือการออกแบบ "Digital Greeting Card สำหรับ LINE Application" ในรูปแบบ JSON Flex Message ที่มีความสวยงามระดับ Premium พร้อมใช้งานจริงบน LINE Application และสามารถนำไปใช้งานกับ Flex Message Simulator ได้ทันที
+
+=====================================================================
+
+## USER INPUT
+
+ผู้ใช้งานจะกำหนดข้อมูลดังต่อไปนี้
+
+- วันประจำสัปดาห์ : ${day}
+- URL รูปภาพ Header : ${url}
+- Mood & Tone : ${mood ? mood : 'เลือก Theme ที่เหมาะสมกับวันนั้นโดยอัตโนมัติ'}
+
+=====================================================================
+
+## OBJECTIVE
+สร้าง Flex Message สำหรับข้อความ "สวัสดีประจำวัน" พร้อมคำอวยพรและข้อความสร้างพลังบวกในช่วงเช้า โดยให้มีความสวยงามระดับ Premium Greeting Card สำหรับ LINE Application
+
+=====================================================================
+
+## OUTPUT REQUIREMENTS
+1. แสดงผลลัพธ์เป็น JSON Flex Message เท่านั้น (ไม่ต้องมีข้อความอธิบายอื่น หรือ Markdown Code Block เช่น \`\`\`json)
+2. JSON ต้องสามารถใช้งานกับ LINE Messaging API, LINE Official Account และ Flex Message Simulator ได้ทันที
+3. ห้ามใช้ Syntax ที่ LINE ไม่รองรับ
+4. ผลลัพธ์ต้องเป็น Valid JSON เท่านั้น
+
+=====================================================================
+
+## COLOR GUIDELINE
+ให้ AI เลือก Theme สีให้เหมาะสมกับวันประจำสัปดาห์
+วันจันทร์: Pastel Yellow / Cream Yellow / Gold Accent
+วันอังคาร: Sky Blue / Cyan Blue / Fresh Blue
+วันพุธ: Mint Green / Nature Green / Emerald Green
+วันพฤหัสบดี: Warm Orange / Light Amber / Honey Gold
+วันศุกร์: Aqua Blue / Ocean Blue / Premium Sky Blue
+วันเสาร์: Lavender / Purple Pastel / Violet Accent
+วันอาทิตย์: Coral Red / Soft Pink / Rose Red
+
+=====================================================================
+
+## DESIGN STYLE & STRUCTURE
+- HERO SECTION: ใช้รูปภาพจาก URL ที่ผู้ใช้กำหนด
+- GREETING SECTION: สวัสดีวัน... / Good Morning / Happy Day
+- DAILY BLESSING SECTION: คำอวยพรประจำวัน
+- POSITIVE ENERGY SECTION: ข้อความพลังบวก
+- CLOSING SECTION: คำลงท้ายสร้างกำลังใจ
+
+=====================================================================
+
+## FINAL OUTPUT FORMAT
+ส่งออกเป็น Pure JSON Flex Message เท่านั้น`;
+
+            try {
+                // เรียกใช้ Gemini REST API (รุ่น gemini-2.5-flash)
+                const apiEndpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+                
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: promptText }]
+                        }],
+                        generationConfig: {
+                            responseMimeType: "application/json" // บังคับให้ Gemini คืนค่าเฉพาะ JSON
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อกับ Gemini API');
+                }
+
+                const data = await response.json();
+                let resultText = data.candidates[0].content.parts[0].text;
+
+                // ทำความสะอาดข้อความ (เผื่อยังมี Markdown code block ติดมา)
+                resultText = resultText.replace(/^```json\s*/, '').replace(/^```\s*/, '').replace(/\s*```$/, '').trim();
+
+                // แสดงผลลัพธ์ใน Textarea
+                jsonOutput.value = resultText;
+                outputContainer.classList.remove('hidden');
+                outputContainer.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                alert('เกิดข้อผิดพลาด: ' + error.message);
+            } finally {
+                // คืนค่าปุ่มกด
+                submitBtn.disabled = false;
+                btnText.textContent = "✨ ประมวลผลด้วย Gemini AI";
+                btnSpinner.classList.add('hidden');
+            }
+        }
+
+        function copyToClipboard() {
+            const textarea = document.getElementById('jsonOutput');
+            textarea.select();
+            document.execCommand('copy');
+
+            const copyBtn = document.getElementById('copyBtn');
+            const originalHTML = copyBtn.innerHTML;
+            copyBtn.innerHTML = `<span>✓ คัดลอกเรียบร้อย!</span>`;
+            copyBtn.classList.remove('bg-gray-800', 'hover:bg-gray-900');
+            copyBtn.classList.add('bg-emerald-600');
+
+            setTimeout(() => {
+                copyBtn.innerHTML = originalHTML;
+                copyBtn.classList.remove('bg-emerald-600');
+                copyBtn.classList.add('bg-gray-800', 'hover:bg-gray-900');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
