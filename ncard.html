@@ -3,84 +3,101 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LINE Member Registration</title>
-  <!-- Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>LINE Member System</title>
+  <!-- เรียกใช้ style2.css -->
+  <link rel="stylesheet" href="style2.css">
   <!-- LINE LIFF SDK -->
   <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+<body>
 
-  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 sm:p-8 relative overflow-hidden">
-    
-    <!-- Loading Overlay -->
-    <div id="loading" class="absolute inset-0 bg-white/90 backdrop-blur-sm z-50 flex flex-col items-center justify-center gap-3">
-      <div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-      <p id="loading-text" class="text-slate-600 font-medium text-sm">กำลังเชื่อมต่อ LINE...</p>
+  <div class="app-container">
+
+    <!-- Card 1: ฟอร์มข้อมูลผู้ใช้ -->
+    <div class="card-glass">
+      
+      <!-- Loading Overlay -->
+      <div id="loading" class="loading-overlay">
+        <div class="spinner"></div>
+        <p id="loading-text" style="margin-top: 12px; font-size: 0.85rem; color: #cbd5e1;">กำลังเชื่อมต่อ LINE...</p>
+      </div>
+
+      <!-- Header Profile -->
+      <div class="profile-header">
+        <div class="avatar-wrapper">
+          <img id="user-picture" src="https://via.placeholder.com/100" alt="Profile" class="avatar-img">
+          <span class="line-badge">LINE</span>
+        </div>
+        <h2 id="user-display-name" class="user-title">กำลังโหลด...</h2>
+        <p id="user-id" class="user-subtext">LINE ID: -</p>
+      </div>
+
+      <!-- Form Section -->
+      <form id="profile-form">
+        <div class="form-group">
+          <label class="form-label">ชื่อ - นามสกุลจริง</label>
+          <input type="text" id="input-name" class="form-control" placeholder="กรอกชื่อ-นามสกุล" required>
+        </div>
+
+        <div style="display: flex; gap: 12px;">
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">เลขห้อง / Room ID</label>
+            <input type="text" id="input-roomid" class="form-control" placeholder="เช่น A101">
+          </div>
+          <div class="form-group" style="flex: 1;">
+            <label class="form-label">ชื่อห้อง / Room Name</label>
+            <input type="text" id="input-roomname" class="form-control" placeholder="เช่น ตึก A">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">อีเมล</label>
+          <input type="email" id="input-email" class="form-control" placeholder="example@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">เบอร์โทรศัพท์</label>
+          <input type="tel" id="input-tel" class="form-control" placeholder="08XXXXXXXX" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ข้อมูลเพิ่มเติม / Other</label>
+          <textarea id="input-other" class="form-control" rows="2" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">บันทึกข้อมูล</button>
+      </form>
+
+      <div id="alert-box" class="alert-box hidden"></div>
     </div>
 
-    <!-- Header / Profile Section -->
-    <div class="text-center mb-6">
-      <div class="relative inline-block">
-        <img id="user-picture" src="https://via.placeholder.com/100" alt="Profile" class="w-20 h-20 rounded-full mx-auto border-4 border-emerald-500 shadow-md object-cover">
+    <!-- Card 2: รายชื่อเพื่อนๆ ในระบบ -->
+    <div class="card-glass">
+      <div class="section-title">
+        <span>สมาชิกในระบบ</span>
+        <button onclick="loadAllUsers()" style="background:none; border:none; color:#10b981; cursor:pointer; font-size:0.85rem;">🔄 รีเฟรช</button>
       </div>
-      <h2 id="user-display-name" class="text-xl font-bold text-slate-800 mt-3">กำลังโหลด...</h2>
-      <p id="user-id" class="text-xs text-slate-400 font-mono mt-1">LINE ID: -</p>
+      <div id="member-list" class="member-list">
+        <p style="text-align: center; color: #64748b; font-size: 0.85rem;">กำลังโหลดรายชื่อ...</p>
+      </div>
     </div>
-
-    <!-- Form Section -->
-    <form id="profile-form" class="space-y-4">
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-1">ชื่อ - นามสกุล</label>
-        <input type="text" id="input-name" required placeholder="กรอกชื่อ-นามสกุล"
-          class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-800">
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-1">อีเมล</label>
-        <input type="email" id="input-email" required placeholder="example@email.com"
-          class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-800">
-      </div>
-
-      <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-1">เบอร์โทรศัพท์</label>
-        <input type="tel" id="input-phone" required placeholder="08XXXXXXXX" pattern="[0-9]{9,10}"
-          class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all text-slate-800">
-      </div>
-
-      <button type="submit" id="btn-submit"
-        class="w-full bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-semibold py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 mt-2">
-        บันทึกข้อมูล
-      </button>
-    </form>
-
-    <!-- Status Alert Box -->
-    <div id="alert-box" class="hidden mt-4 p-3 rounded-lg text-sm text-center"></div>
 
   </div>
 
   <script>
     // =========================================================
-    // CONFIGURATION (กำหนดค่าของคุณที่นี่)
+    // CONFIGURATION (ใส่ค่าจริงของคุณที่นี่)
     // =========================================================
     const MY_LIFF_ID = "2011072958-I6rWrpSd"; // นำ LIFF ID จาก LINE Developers Console มาวางที่นี่
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUkUbsSiomTHXrAY1KhA3LTEPXwEW0_yaURw1pmPifXhKQDUWX8gYmt9Exme593jdg/exec"; // นำ Web App URL จาก Google Apps Script มาวางที่นี่
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUkUbsSiomTHXrAY1KhA3LTEPXwEW0_yaURw1pmPifXhKQDUWX8gYmt9Exme593jdg/exec";
     // =========================================================
 
-    let currentUserId = "";
+    let lineProfile = {};
 
-    // Elements
-    const loadingEl = document.getElementById("loading");
-    const loadingTextEl = document.getElementById("loading-text");
-    const profileForm = document.getElementById("profile-form");
-    const alertBox = document.getElementById("alert-box");
-
-    // Initialize App
     window.addEventListener("load", () => {
       initLiff();
     });
 
-    // 1. Initialize LINE LIFF
     async function initLiff() {
       try {
         await liff.init({ liffId: MY_LIFF_ID });
@@ -90,73 +107,104 @@
           return;
         }
 
-        const profile = await liff.getProfile();
-        currentUserId = profile.userId;
+        lineProfile = await liff.getProfile();
 
-        // แสดงข้อมูลพื้นฐานจาก LINE
-        document.getElementById("user-display-name").innerText = profile.displayName || "ผู้ใช้งาน";
-        document.getElementById("user-id").innerText = `ID: ${profile.userId}`;
-        if (profile.pictureUrl) {
-          document.getElementById("user-picture").src = profile.pictureUrl;
+        // แสดงโปรไฟล์ LINE
+        document.getElementById("user-display-name").innerText = lineProfile.displayName || "ผู้ใช้งาน";
+        document.getElementById("user-id").innerText = `ID: ${lineProfile.userId}`;
+        if (lineProfile.pictureUrl) {
+          document.getElementById("user-picture").src = lineProfile.pictureUrl;
         }
 
-        // ดึงข้อมูลเดิมจาก Google Sheets
-        await fetchUserDataFromGAS(currentUserId, profile.displayName);
+        // โหลดข้อมูลตนเอง และเพื่อนๆ ทั้งหมด
+        await fetchUserData(lineProfile.userId);
+        await loadAllUsers();
 
       } catch (err) {
         console.error("LIFF Init Error:", err);
         showAlert("เกิดข้อผิดพลาดในการเชื่อมต่อ LINE: " + err.message, "error");
-        hideLoading();
+        setLoading(false);
       }
     }
 
-    // 2. ดึงข้อมูลผู้ใช้จาก Google Sheets
-    async function fetchUserDataFromGAS(userId, defaultDisplayName) {
-      loadingTextEl.innerText = "กำลังตรวจสอบข้อมูลสมาชิก...";
+    // ดึงข้อมูลส่วนตัวจาก GAS
+    async function fetchUserData(userId) {
+      setLoading(true, "กำลังดึงข้อมูลสมาชิก...");
       try {
         const response = await fetch(`${GAS_WEB_APP_URL}?action=getUser&userId=${encodeURIComponent(userId)}`);
         const result = await response.json();
 
         if (result.status === "success" && result.data) {
-          // มีข้อมูลเดิม เติมข้อมูลใส่ฟอร์ม
-          document.getElementById("input-name").value = result.data.name || defaultDisplayName || "";
-          document.getElementById("input-email").value = result.data.email || "";
-          document.getElementById("input-phone").value = result.data.phone || "";
-          showAlert("ดึงข้อมูลสมาชิกเดิมเรียบร้อยแล้ว", "success");
+          const d = result.data;
+          document.getElementById("input-roomid").value = d.roomid || "";
+          document.getElementById("input-roomname").value = d.roomname || "";
+          document.getElementById("input-name").value = d.name || lineProfile.displayName || "";
+          document.getElementById("input-email").value = d.email || "";
+          document.getElementById("input-tel").value = d.tel || "";
+          document.getElementById("input-other").value = d.other || "";
+          showAlert("โหลดข้อมูลสำเร็จ", "success");
         } else {
-          // ยังไม่มีข้อมูลในระบบ ใช้ชื่อจาก LINE เป็นค่าเริ่มต้น
-          document.getElementById("input-name").value = defaultDisplayName || "";
-          showAlert("ไม่พบข้อมูลสมาชิก กรุณากรอกข้อมูลเพื่อลงทะเบียน", "info");
+          document.getElementById("input-name").value = lineProfile.displayName || "";
+          showAlert("ลงทะเบียนใหม่ กรุณากรอกข้อมูล", "info");
         }
-
       } catch (err) {
-        console.error("Fetch User Error:", err);
-        showAlert("ไม่สามารถดึงข้อมูลจากระบบได้ กรุณาลองใหม่อีกครั้ง", "error");
+        console.error(err);
+        showAlert("ไม่สามารถดึงข้อมูลส่วนตัวได้", "error");
       } finally {
-        hideLoading();
+        setLoading(false);
       }
     }
 
-    // 3. บันทึกข้อมูลไปยัง Google Sheets
-    profileForm.addEventListener("submit", async (e) => {
+    // ดึงรายชื่อสมาชิกทั้งหมดมาแสดง
+    async function loadAllUsers() {
+      const listEl = document.getElementById("member-list");
+      try {
+        const response = await fetch(`${GAS_WEB_APP_URL}?action=getAllUsers`);
+        const result = await response.json();
+
+        if (result.status === "success" && result.data.length > 0) {
+          listEl.innerHTML = result.data.map(u => `
+            <div class="member-item">
+              <img src="${u.img || 'https://via.placeholder.com/100'}" class="member-avatar">
+              <div class="member-info">
+                <p class="member-name">${u.name || u.display || 'ไม่ระบุชื่อ'}</p>
+                <p class="member-detail">ห้อง: ${u.roomid || '-'} ${u.roomname ? '('+u.roomname+')' : ''}</p>
+                <p class="member-detail">โทร: ${u.tel || '-'}</p>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          listEl.innerHTML = `<p style="text-align: center; color: #64748b; font-size: 0.85rem;">ยังไม่มีสมาชิกในระบบ</p>`;
+        }
+      } catch (err) {
+        listEl.innerHTML = `<p style="text-align: center; color: #ef4444; font-size: 0.85rem;">โหลดข้อมูลล้มเหลว</p>`;
+      }
+    }
+
+    // บันทึกข้อมูล
+    document.getElementById("profile-form").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      if (!currentUserId) {
-        showAlert("ไม่พบ LINE User ID กรุณารีเฟรชหน้าเว็บ", "error");
+      if (!lineProfile.userId) {
+        showAlert("ไม่พบ LINE User ID", "error");
         return;
       }
 
-      showLoading("กำลังบันทึกข้อมูล...");
+      setLoading(true, "กำลังบันทึกข้อมูล...");
 
       const payload = {
-        userId: currentUserId,
+        roomid: document.getElementById("input-roomid").value.trim(),
+        roomname: document.getElementById("input-roomname").value.trim(),
+        userid: lineProfile.userId,
+        display: lineProfile.displayName || "",
         name: document.getElementById("input-name").value.trim(),
         email: document.getElementById("input-email").value.trim(),
-        phone: document.getElementById("input-phone").value.trim()
+        tel: document.getElementById("input-tel").value.trim(),
+        other: document.getElementById("input-other").value.trim(),
+        img: lineProfile.pictureUrl || ""
       };
 
       try {
-        // ส่งแบบ text/plain เพื่อหลีกเลี่ยงปัญหา CORS Preflight ใน GAS
         const response = await fetch(GAS_WEB_APP_URL, {
           method: "POST",
           headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -166,41 +214,34 @@
         const result = await response.json();
 
         if (result.status === "success") {
-          showAlert("บันทึกข้อมูลเรียบร้อยแล้ว!", "success");
+          showAlert("บันทึกข้อมูลลง Google Sheets เรียบร้อย!", "success");
+          await loadAllUsers(); // โหลดการ์ดรายชื่อเพื่อนใหม่
         } else {
           showAlert("บันทึกไม่สำเร็จ: " + result.message, "error");
         }
-
       } catch (err) {
-        console.error("Save Data Error:", err);
+        console.error(err);
         showAlert("เกิดข้อผิดพลาดขณะส่งข้อมูล", "error");
       } finally {
-        hideLoading();
+        setLoading(false);
       }
     });
 
-    // Helper Functions
-    function showLoading(text) {
-      loadingTextEl.innerText = text || "กำลังโหลด...";
-      loadingEl.classList.remove("hidden");
-    }
-
-    function hideLoading() {
-      loadingEl.classList.add("hidden");
-    }
-
-    function showAlert(message, type) {
-      alertBox.classList.remove("hidden", "bg-red-100", "text-red-700", "bg-green-100", "text-green-700", "bg-blue-100", "text-blue-700");
-      
-      if (type === "error") {
-        alertBox.classList.add("bg-red-100", "text-red-700");
-      } else if (type === "success") {
-        alertBox.classList.add("bg-green-100", "text-green-700");
+    function setLoading(show, text) {
+      const el = document.getElementById("loading");
+      if (show) {
+        document.getElementById("loading-text").innerText = text || "กำลังโหลด...";
+        el.classList.remove("hidden");
       } else {
-        alertBox.classList.add("bg-blue-100", "text-blue-700");
+        el.classList.add("hidden");
       }
+    }
 
-      alertBox.innerText = message;
+    function showAlert(msg, type) {
+      const box = document.getElementById("alert-box");
+      box.className = `alert-box alert-${type}`;
+      box.innerText = msg;
+      box.classList.remove("hidden");
     }
   </script>
 </body>
