@@ -176,7 +176,7 @@
     outline:none;
     transition:border-color .15s, box-shadow .15s, background .15s;
   }
-  .field textarea{resize:vertical;min-height:78px;line-height:1.5;}
+  .field textarea{resize:vertical;min-height:160px;line-height:1.5;}
   .field input::placeholder, .field textarea::placeholder{color:#4a5f80;}
   .field input:focus, .field textarea:focus{
     border-color:var(--cyan);
@@ -212,6 +212,14 @@
   .btn-row{display:flex;gap:10px;margin-top:16px;}
   .btn-row .btn{margin-top:0;}
   .btn-icon svg{width:16px;height:16px;}
+  .btn-sm{
+    width:auto;
+    display:flex;
+    padding:9px 22px;
+    font-size:13px;
+    margin:4px auto 0;
+  }
+  .btn-sm svg{width:13px;height:13px;}
 
   /* ---------- Friends list ---------- */
   .hidden{display:none !important;}
@@ -347,10 +355,10 @@
     </div>
     <div class="field">
       <label>ข้อมูลเพิ่มเติม (อาชีพ / Facebook / IG / TikTok ฯลฯ)</label>
-      <textarea id="f_other" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea>
+      <textarea id="f_other" rows="7" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea>
     </div>
 
-    <button class="btn btn-primary" id="btnSave">
+    <button class="btn btn-primary btn-sm" id="btnSave">
       <svg class="btn-icon" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#04101f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span id="btnSaveText">บันทึกข้อมูล</span>
     </button>
