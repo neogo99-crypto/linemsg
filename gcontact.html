@@ -302,7 +302,7 @@
   <div id="statusBar"></div>
 
   <!-- ============ Profile Holo Card (readonly, from LINE) ============ -->
-  <div class="holo-card">
+  <div class="holo-card" id="myCardSection">
     <div class="holo-card-inner">
       <div class="holo-top">
         <img id="myAvatar" class="avatar hidden" src="" alt="avatar">
@@ -573,6 +573,7 @@
 
   async function loadFriendList(){
     $('friendListContainer').innerHTML = '<div class="empty-state">กำลังโหลดรายชื่อ...</div>';
+    $('myCardSection').classList.add('hidden');
     $('formPanel').classList.add('hidden');
     $('listPanel').classList.remove('hidden');
     try{
@@ -650,6 +651,7 @@
         fillForm(detail);
         closeModal();
         $('listPanel').classList.add('hidden');
+        $('myCardSection').classList.remove('hidden');
         $('formPanel').classList.remove('hidden');
         window.scrollTo({top:0, behavior:'smooth'});
       };
@@ -665,6 +667,7 @@
   $('btnToggleFriends').addEventListener('click', loadFriendList);
   $('btnBackToForm').addEventListener('click', () => {
     $('listPanel').classList.add('hidden');
+    $('myCardSection').classList.remove('hidden');
     $('formPanel').classList.remove('hidden');
   });
   $('modalCloseBtn').addEventListener('click', closeModal);
