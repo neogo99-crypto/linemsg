@@ -113,31 +113,15 @@
     position:relative;
     border-radius:var(--radius-lg);
     padding:2px;
-    background:conic-gradient(from 0deg, var(--blue-deep), var(--cyan), var(--blue-primary), var(--blue-deep));
-    animation:rotateBorder 6s linear infinite;
+    background:linear-gradient(135deg, var(--blue-deep), var(--cyan), var(--blue-primary));
     margin-bottom:18px;
   }
-  @keyframes rotateBorder{to{filter:hue-rotate(360deg);}}
   .holo-card-inner{
     position:relative;
     border-radius:calc(var(--radius-lg) - 2px);
     background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel) 60%);
     padding:26px 22px 22px;
     overflow:hidden;
-  }
-  .holo-card-inner::after{
-    content:"";
-    position:absolute;
-    top:-60%;left:-30%;
-    width:60%;height:220%;
-    background:linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
-    transform:rotate(20deg);
-    animation:sheen 4.5s ease-in-out infinite;
-  }
-  @keyframes sheen{
-    0%{transform:translateX(-40%) rotate(20deg);}
-    50%{transform:translateX(220%) rotate(20deg);}
-    100%{transform:translateX(220%) rotate(20deg);}
   }
   .holo-top{display:flex;align-items:center;gap:14px;position:relative;z-index:1;}
   .avatar{
