@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>นามบัตรดิจิทัล</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+  :root{
+    --bg-void:#050914;
+    --bg-panel:#0b1730;
+    --bg-panel-2:#0e1e3d;
+    --glass:rgba(255,255,255,0.045);
+    --glass-border:rgba(126,214,255,0.18);
+    --blue-deep:#0a2a6b;
+    --blue-primary:#1f6fff;
+    --cyan:#29e0ff;
+    --cyan-soft:#8fefff;
+    --text-primary:#eaf4ff;
+    --text-muted:#7b93b8;
+    --danger:#ff5c7a;
+    --ok:#39e2a5;
+    --radius-lg:22px;
+    --radius-md:14px;
+    --font-display:'Orbitron', sans-serif;
+    --font-body:'Prompt', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(31,111,255,0.28), transparent 45%),
+      radial-gradient(circle at 85% 10%, rgba(41,224,255,0.14), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(10,42,107,0.5), transparent 55%),
+      var(--bg-void);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    -webkit-font-smoothing:antialiased;
+    padding:22px 16px 60px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background-image:
+      linear-gradient(rgba(126,214,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(126,214,255,0.05) 1px, transparent 1px);
+    background-size:34px 34px;
+    mask-image:radial-gradient(circle at 50% 20%, black, transparent 70%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .wrap{max-width:480px;margin:0 auto;position:relative;z-index:1;}
+
+  /* ---------- Header ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg, var(--cyan), var(--blue-primary));
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 18px rgba(41,224,255,0.55);
+  }
+  .brand-mark svg{width:18px;height:18px;}
+  .brand-text{font-family:var(--font-display);font-weight:700;font-size:13px;letter-spacing:2px;color:var(--cyan-soft);}
+  .room-chip{
+    font-family:var(--font-display);
+    font-size:10px;letter-spacing:1.5px;
+    color:var(--cyan);
+    border:1px solid var(--glass-border);
+    background:rgba(41,224,255,0.06);
+    padding:6px 12px;border-radius:100px;
+    text-transform:uppercase;
+  }
+
+  /* ---------- Status / loader ---------- */
+  #statusBar{
+    display:none;
+    align-items:center;gap:10px;
+    background:rgba(255,92,122,0.1);
+    border:1px solid rgba(255,92,122,0.35);
+    color:#ffc4d1;
+    padding:12px 14px;border-radius:var(--radius-md);
+    font-size:13px;margin-bottom:16px;
+  }
+  #statusBar.show{display:flex;}
+  #statusBar.ok{background:rgba(57,226,165,0.1);border-color:rgba(57,226,165,0.35);color:#bdf6e3;}
+
+  .loader-screen{
+    position:fixed;inset:0;z-index:50;
+    background:var(--bg-void);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  }
+  .ring{
+    width:58px;height:58px;border-radius:50%;
+    border:3px solid rgba(126,214,255,0.15);
+    border-top-color:var(--cyan);
+    animation:spin 0.9s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loader-text{font-family:var(--font-display);font-size:11px;letter-spacing:3px;color:var(--text-muted);text-transform:uppercase;}
+
+  /* ---------- Holo card ---------- */
+  .holo-card{
+    position:relative;
+    border-radius:var(--radius-lg);
+    padding:2px;
+    background:linear-gradient(135deg, var(--blue-deep), var(--cyan), var(--blue-primary));
+    margin-bottom:18px;
+  }
+  .holo-card-inner{
+    position:relative;
+    border-radius:calc(var(--radius-lg) - 2px);
+    background:linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel) 60%);
+    padding:26px 22px 22px;
+    overflow:hidden;
+  }
+  .holo-top{display:flex;align-items:center;gap:14px;position:relative;z-index:1;}
+  .avatar{
+    width:64px;height:64px;border-radius:16px;
+    object-fit:cover;
+    border:1px solid var(--glass-border);
+    background:var(--bg-panel);
+    flex-shrink:0;
+  }
+  .avatar-fallback{
+    width:64px;height:64px;border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg, var(--blue-deep), var(--bg-panel));
+    color:var(--cyan-soft);font-family:var(--font-display);font-size:20px;
+    border:1px solid var(--glass-border);
+  }
+  .holo-id-label{font-family:var(--font-display);font-size:9px;letter-spacing:2.5px;color:var(--cyan);text-transform:uppercase;margin-bottom:4px;}
+  .holo-name{font-size:19px;font-weight:600;color:var(--text-primary);line-height:1.25;}
+  .holo-sub{font-size:12.5px;color:var(--text-muted);margin-top:2px;}
+  .holo-divider{height:1px;background:linear-gradient(90deg, transparent, var(--glass-border), transparent);margin:18px 0;}
+  .holo-field-row{display:flex;justify-content:space-between;gap:10px;font-size:12px;position:relative;z-index:1;}
+  .holo-field-row .k{color:var(--text-muted);}
+  .holo-field-row .v{color:var(--cyan-soft);font-weight:500;text-align:right;}
+  #modalOther{
+    white-space:pre-wrap;
+    word-break:break-word;
+    text-align:left;
+    line-height:1.5;
+  }
+
+  /* ---------- Section headers ---------- */
+  .section-title{
+    font-family:var(--font-display);
+    font-size:11px;letter-spacing:2.5px;
+    color:var(--text-muted);
+    text-transform:uppercase;
+    margin:26px 0 12px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .section-title::before{content:"";width:6px;height:6px;border-radius:2px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);}
+
+  /* ---------- Form ---------- */
+  .field{margin-bottom:14px;}
+  .field label{
+    display:block;font-size:11.5px;color:var(--text-muted);
+    margin-bottom:6px;letter-spacing:0.4px;
+  }
+  .field .req{color:var(--cyan);}
+  .field input, .field textarea{
+    width:100%;
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    color:var(--text-primary);
+    font-family:var(--font-body);
+    font-size:14.5px;
+    padding:12px 14px;
+    border-radius:var(--radius-md);
+    outline:none;
+    transition:border-color .15s, box-shadow .15s, background .15s;
+  }
+  .field textarea{resize:vertical;min-height:160px;line-height:1.5;}
+  .field input::placeholder, .field textarea::placeholder{color:#4a5f80;}
+  .field input:focus, .field textarea:focus{
+    border-color:var(--cyan);
+    background:rgba(41,224,255,0.05);
+    box-shadow:0 0 0 3px rgba(41,224,255,0.12);
+  }
+
+  .btn{
+    width:100%;
+    border:none;
+    border-radius:var(--radius-md);
+    padding:14px 18px;
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:14.5px;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    transition:transform .1s, opacity .15s, box-shadow .15s;
+  }
+  .btn:active{transform:scale(0.985);}
+  .btn:disabled{opacity:0.55;cursor:not-allowed;}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--cyan), var(--blue-primary));
+    color:#04101f;
+    box-shadow:0 6px 22px rgba(41,224,255,0.28);
+  }
+  .btn-ghost{
+    background:var(--glass);
+    color:var(--cyan-soft);
+    border:1px solid var(--glass-border);
+    margin-top:10px;
+  }
+  .btn-row{display:flex;gap:10px;margin-top:16px;}
+  .btn-row .btn{margin-top:0;}
+  .btn-icon svg{width:16px;height:16px;}
+  .btn-sm{
+    width:auto;
+    display:flex;
+    padding:9px 22px;
+    font-size:13px;
+    margin:4px auto 0;
+  }
+  .btn-sm svg{width:13px;height:13px;}
+
+  /* ---------- Friends list ---------- */
+  .hidden{display:none !important;}
+  .list-panel{margin-top:8px;}
+  .friend-row{
+    display:flex;align-items:center;gap:12px;
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    border-radius:var(--radius-md);
+    padding:11px 13px;
+    margin-bottom:8px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+  }
+  .friend-row:active{background:rgba(41,224,255,0.08);}
+  .friend-row.me{border-color:rgba(41,224,255,0.55);}
+  .friend-avatar{width:40px;height:40px;border-radius:11px;object-fit:cover;background:var(--bg-panel);flex-shrink:0;}
+  .friend-avatar-fallback{
+    width:40px;height:40px;border-radius:11px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg, var(--blue-deep), var(--bg-panel));
+    color:var(--cyan-soft);font-family:var(--font-display);font-size:14px;
+  }
+  .friend-meta{flex:1;min-width:0;}
+  .friend-real{font-size:14px;font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .friend-sub{font-size:11.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .me-tag{
+    font-family:var(--font-display);font-size:8.5px;letter-spacing:1.5px;
+    color:#04101f;background:var(--cyan);padding:3px 7px;border-radius:100px;
+    flex-shrink:0;
+  }
+  .empty-state{
+    text-align:center;color:var(--text-muted);
+    font-size:13px;padding:30px 10px;
+    border:1px dashed var(--glass-border);border-radius:var(--radius-md);
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:40;
+    background:rgba(2,6,16,0.72);
+    backdrop-filter:blur(4px);
+    display:flex;align-items:flex-end;justify-content:center;
+    padding:16px;
+  }
+  .modal-overlay.hidden{display:none !important;}
+  .modal-sheet{
+    width:100%;max-width:480px;
+    animation:slideUp .22s ease-out;
+  }
+  @keyframes slideUp{from{transform:translateY(24px);opacity:0;} to{transform:translateY(0);opacity:1;}}
+  .modal-close{
+    display:flex;justify-content:flex-end;margin-bottom:8px;
+  }
+  .modal-close button{
+    background:var(--glass);border:1px solid var(--glass-border);
+    color:var(--text-muted);width:34px;height:34px;border-radius:50%;
+    cursor:pointer;font-size:16px;
+  }
+
+  footer{
+    text-align:center;margin-top:34px;
+    font-size:10.5px;letter-spacing:1px;color:#425a7c;
+    font-family:var(--font-display);
+    text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+
+<div class="loader-screen" id="loaderScreen">
+  <div class="ring"></div>
+  <div class="loader-text" id="loaderText">CONNECTING TO LINE</div>
+</div>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7L12 3L20 7V17L12 21L4 17V7Z" stroke="#04101f" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 7L12 11L20 7" stroke="#04101f" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 11V21" stroke="#04101f" stroke-width="1.8"/></svg>
+      </div>
+      <div class="brand-text">DIGITAL&nbsp;ID</div>
+    </div>
+    <!-- <div class="room-chip" id="roomChip">ROOM: -</div> -->
+  </div>
+
+  <div id="statusBar"></div>
+
+  <!-- ============ Profile Holo Card (readonly, from LINE) ============ -->
+  <div class="holo-card" id="myCardSection">
+    <div class="holo-card-inner">
+      <div class="holo-top">
+        <img id="myAvatar" class="avatar hidden" src="" alt="avatar">
+        <div id="myAvatarFallback" class="avatar-fallback hidden">?</div>
+        <div>
+          <div class="holo-id-label">LINE Profile · Read only</div>
+          <div class="holo-name" id="myDisplayName">กำลังโหลด...</div>
+          <div class="holo-sub" id="myUserIdShort">-</div>
+        </div>
+      </div>
+      <div class="holo-divider"></div>
+      <div class="holo-field-row">
+        <span class="k">ห้อง (Room)</span>
+        <span class="v" id="holoRoom">-</span>
+      </div>
+      <div class="holo-field-row" style="margin-top:8px;">
+        <span class="k">สถานะข้อมูล</span>
+        <span class="v" id="holoStatus">ยังไม่มีข้อมูล</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ Form ============ -->
+  <div id="formPanel">
+    <div class="section-title" id="formTitle">กรอกข้อมูลนามบัตร</div>
+
+    <div class="field">
+      <label>ชื่อ - นามสกุล <span class="req">*</span></label>
+      <input type="text" id="f_realname" placeholder="เช่น สมชาย ใจดี" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>ชื่อเล่น</label>
+      <input type="text" id="f_nickname" placeholder="เช่น ชาย" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>อีเมล</label>
+      <input type="email" id="f_email" placeholder="name@email.com" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>เบอร์โทร</label>
+      <input type="tel" id="f_tel" placeholder="08X-XXX-XXXX" autocomplete="off">
+    </div>
+    <div class="field">
+      <label>ข้อมูลเพิ่มเติม (อาชีพ / Facebook / IG / TikTok ฯลฯ)</label>
+      <textarea id="f_other" rows="7" placeholder="พิมพ์รายละเอียดเพิ่มเติมได้ที่นี่..."></textarea>
+    </div>
+
+    <button class="btn btn-primary btn-sm" id="btnSave">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#04101f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="btnSaveText">บันทึกข้อมูล</span>
+    </button>
+    <button class="btn btn-ghost" id="btnToggleFriends">แสดงนามบัตรเพื่อนในห้องนี้</button>
+  </div>
+
+  <!-- ============ Friends List ============ -->
+  <div id="listPanel" class="hidden">
+    <div class="section-title">นามบัตรในห้องนี้</div>
+    <div class="list-panel" id="friendListContainer"></div>
+    <button class="btn btn-ghost" id="btnBackToForm">กลับไปหน้ากรอกข้อมูล</button>
+  </div>
+
+  <footer>Secured by LINE Login · LIFF</footer>
+</div>
+
+<!-- ============ Card Detail Modal ============ -->
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal-sheet">
+    <div class="modal-close"><button id="modalCloseBtn">✕</button></div>
+    <div class="holo-card">
+      <div class="holo-card-inner">
+        <div class="holo-top">
+          <img id="modalAvatar" class="avatar hidden" src="" alt="avatar">
+          <div id="modalAvatarFallback" class="avatar-fallback hidden">?</div>
+          <div>
+            <div class="holo-id-label" id="modalIdLabel">DIGITAL BUSINESS CARD</div>
+            <div class="holo-name" id="modalRealname">-</div>
+            <div class="holo-sub" id="modalNickname">-</div>
+          </div>
+        </div>
+        <div class="holo-divider"></div>
+        <div class="holo-field-row"><span class="k">ชื่อไลน์</span><span class="v" id="modalDisplayname">-</span></div>
+        <div class="holo-field-row" style="margin-top:8px;"><span class="k">อีเมล</span><span class="v" id="modalEmail">-</span></div>
+        <div class="holo-field-row" style="margin-top:8px;"><span class="k">เบอร์โทร</span><span class="v" id="modalTel">-</span></div>
+        <div class="holo-field-row" style="margin-top:8px;align-items:flex-start;"><span class="k">เพิ่มเติม</span><span class="v" id="modalOther" style="max-width:65%;">-</span></div>
+      </div>
+    </div>
+    <button class="btn btn-primary hidden" id="btnEditFromModal" style="margin-top:14px;">แก้ไขข้อมูลของฉัน</button>
+  </div>
+</div>
+
+<script>
+  // ===================== CONFIG =====================
+  // LIFF ID จาก LINE Developers Console
+  const LIFF_ID = "2011099349-XctZrigM";
+  // URL ของ Apps Script Web App (ได้จากตอน Deploy > New deployment ใน code.gs)
+  // ตัวอย่าง: https://script.google.com/macros/s/AKfycb.../exec
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/library/d/1rCVwk_GbLU5iHioKTRaSnzVAPqQC7NmgPvEP40-aSkB7IpmwEUE3jzVw/5";
+  const DEFAULT_ROOM = "์NoRoom";
+  const BOOT_TIMEOUT_MS = 15000; // กันหน้าจอค้าง: ถ้าเชื่อมต่อไม่เสร็จภายในเวลานี้ จะแจ้งเตือนแทนการค้างเฉยๆ
+
+  let myProfile = null;   // { userId, displayName, pictureUrl }
+  let myIdToken = null;
+  let currentRoom = DEFAULT_ROOM;
+  let hasExistingRecord = false;
+  let friendsCache = [];
+  let bootTimer = null;
+
+  const $ = (id) => document.getElementById(id);
+
+  function setLoader(text, show){
+    $('loaderText').textContent = text;
+    $('loaderScreen').style.display = show ? 'flex' : 'none';
+  }
+
+  function showStatus(msg, isOk){
+    const el = $('statusBar');
+    el.textContent = msg;
+    el.classList.add('show');
+    el.classList.toggle('ok', !!isOk);
+    if(isOk){ setTimeout(()=> el.classList.remove('show'), 2600); }
+  }
+
+  function initials(name){
+    if(!name) return '?';
+    return name.trim().charAt(0).toUpperCase();
+  }
+
+  function getRoomParam(){
+    const usp = new URLSearchParams(window.location.search);
+    if (usp.get('room')) return usp.get('room');
+    const liffState = usp.get('liff.state');
+    if (liffState) {
+      const decoded = decodeURIComponent(liffState);
+      const qs = decoded.indexOf('?') === 0 ? decoded.substring(1) : decoded;
+      const stateParams = new URLSearchParams(qs);
+      if (stateParams.get('room')) return stateParams.get('room');
+    }
+    return DEFAULT_ROOM;
+  }
+
+  /**
+   * เรียก API ของ Apps Script (code.gs) ผ่าน fetch
+   * ใช้ Content-Type: text/plain โดยตั้งใจ เพื่อให้ browser มองเป็น "simple request"
+   * และไม่ยิง CORS preflight (OPTIONS) ซึ่ง Apps Script Web App ไม่รองรับ
+   */
+  async function callApi(action, payload){
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('วาง_URL') === 0) {
+      throw new Error('ยังไม่ได้ตั้งค่า APPS_SCRIPT_URL ในไฟล์ index.html');
+    }
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action, payload: payload || {} })
+    });
+    if (!res.ok) throw new Error('เซิร์ฟเวอร์ตอบกลับผิดปกติ (HTTP ' + res.status + ')');
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
+    return json.data;
+  }
+
+  async function boot(){
+    // ตัวกันหน้าจอค้าง: ถ้ากระบวนการทั้งหมดไม่เสร็จภายในเวลาที่กำหนด ให้แจ้งเตือนแทนการค้างวนลูป
+    bootTimer = setTimeout(() => {
+      setLoader('', false);
+      showStatus('เชื่อมต่อไม่สำเร็จภายในเวลาที่กำหนด กรุณาตรวจสอบว่า LIFF Endpoint URL ตรงกับ URL ของหน้านี้ และเปิดผ่านแอป LINE จริง', false);
+    }, BOOT_TIMEOUT_MS);
+
+    try{
+      setLoader('CONNECTING TO LINE', true);
+      currentRoom = getRoomParam();
+      // $('roomChip').textContent = 'ROOM: ' + currentRoom.toUpperCase();
+      $('holoRoom').textContent = currentRoom;
+
+      await liff.init({ liffId: LIFF_ID });
+
+      if (!liff.isLoggedIn()) {
+        liff.login({ redirectUri: window.location.href });
+        return; // หน้าเว็บจะ redirect ไป login แล้วกลับมาเอง ไม่ต้องทำอะไรต่อ
+      }
+
+      setLoader('LOADING PROFILE', true);
+      myProfile = await liff.getProfile();
+      myIdToken = liff.getIDToken();
+
+      renderMyProfile();
+
+      setLoader('SYNCING SHEET DATA', true);
+      const existing = await callApi('getMyData', { room: currentRoom, idToken: myIdToken });
+      const hasFilledInfo = !!(existing && String(existing.realname || '').trim());
+
+      if (hasFilledInfo) {
+        hasExistingRecord = true;
+        fillForm(existing);
+        $('holoStatus').textContent = 'มีข้อมูลแล้ว (แก้ไขได้)';
+        $('formTitle').textContent = 'แก้ไขข้อมูลนามบัตรของฉัน';
+        $('btnSaveText').textContent = 'อัปเดตข้อมูล';
+      } else {
+        $('holoStatus').textContent = 'ยังไม่มีข้อมูล';
+      }
+
+      // บันทึก/ซิงก์ข้อมูล room + userid + displayname + รูปโปรไฟล์ ให้อัตโนมัติเสมอ
+      // (ไม่ว่าจะเคยกรอกข้อมูลหรือไม่ก็ตาม) เพื่อให้รู้ว่ามีใครเปิดลิงก์เข้ามาดูบ้าง
+      // แม้ยังไม่ได้กรอกชื่อจริง/เบอร์โทร ก็ตาม โดยไม่รบกวนผู้ใช้ ทำงานเงียบๆ เบื้องหลัง
+      const profileChanged = !existing
+                           || (existing.displayname || '') !== (myProfile.displayName || '')
+                           || (existing.imgurl || '') !== (myProfile.pictureUrl || '');
+      if (profileChanged) {
+        callApi('syncProfile', {
+          idToken: myIdToken,
+          room: currentRoom,
+          displayname: myProfile.displayName || '',
+          imgurl: myProfile.pictureUrl || ''
+        }).catch(err => console.warn('syncProfile ล้มเหลว (ไม่กระทบการใช้งาน):', err));
+      }
+
+      clearTimeout(bootTimer);
+      setLoader('', false);
+    } catch(err){
+      clearTimeout(bootTimer);
+      setLoader('', false);
+      showStatus('เกิดข้อผิดพลาด: ' + (err && err.message ? err.message : err), false);
+      console.error(err);
+    }
+  }
+
+  function renderMyProfile(){
+    $('myDisplayName').textContent = myProfile.displayName || '(ไม่มีชื่อ)';
+    $('myUserIdShort').textContent = 'ID: ' + myProfile.userId.slice(0,10) + '…';
+    if (myProfile.pictureUrl) {
+      $('myAvatar').src = myProfile.pictureUrl;
+      $('myAvatar').classList.remove('hidden');
+      $('myAvatarFallback').classList.add('hidden');
+    } else {
+      $('myAvatarFallback').textContent = initials(myProfile.displayName);
+      $('myAvatarFallback').classList.remove('hidden');
+      $('myAvatar').classList.add('hidden');
+    }
+  }
+
+  function fillForm(record){
+    $('f_realname').value = record.realname || '';
+    $('f_nickname').value = record.nickname || '';
+    $('f_email').value = record.email || '';
+    $('f_tel').value = record.tel || '';
+    $('f_other').value = record.other || '';
+  }
+
+  async function handleSave(){
+    const realname = $('f_realname').value.trim();
+    if (!realname) {
+      showStatus('กรุณากรอกชื่อ - นามสกุล', false);
+      $('f_realname').focus();
+      return;
+    }
+    const btn = $('btnSave');
+    btn.disabled = true;
+    const oldText = $('btnSaveText').textContent;
+    $('btnSaveText').textContent = 'กำลังบันทึก...';
+
+    try{
+      const payload = {
+        idToken: myIdToken,
+        room: currentRoom,
+        displayname: myProfile.displayName || '',
+        imgurl: myProfile.pictureUrl || '',
+        realname: realname,
+        nickname: $('f_nickname').value.trim(),
+        email: $('f_email').value.trim(),
+        tel: $('f_tel').value.trim(),
+        other: $('f_other').value.trim()
+      };
+      await callApi('saveData', payload);
+      hasExistingRecord = true;
+      $('holoStatus').textContent = 'มีข้อมูลแล้ว (แก้ไขได้)';
+      $('formTitle').textContent = 'แก้ไขข้อมูลนามบัตรของฉัน';
+      showStatus('บันทึกข้อมูลเรียบร้อยแล้ว', true);
+      friendsCache = []; // invalidate cache so list refreshes next time
+    } catch(err){
+      showStatus('บันทึกไม่สำเร็จ: ' + (err && err.message ? err.message : err), false);
+    } finally {
+      btn.disabled = false;
+      $('btnSaveText').textContent = hasExistingRecord ? 'อัปเดตข้อมูล' : oldText;
+    }
+  }
+
+  async function loadFriendList(){
+    $('friendListContainer').innerHTML = '<div class="empty-state">กำลังโหลดรายชื่อ...</div>';
+    $('myCardSection').classList.add('hidden');
+    $('formPanel').classList.add('hidden');
+    $('listPanel').classList.remove('hidden');
+    try{
+      const list = await callApi('getAllCards', { room: currentRoom });
+      friendsCache = list || [];
+      renderFriendList();
+    } catch(err){
+      $('friendListContainer').innerHTML = '<div class="empty-state">โหลดรายชื่อไม่สำเร็จ</div>';
+    }
+  }
+
+  function renderFriendList(){
+    const box = $('friendListContainer');
+    if (!friendsCache.length) {
+      box.innerHTML = '<div class="empty-state">ยังไม่มีนามบัตรในห้องนี้</div>';
+      return;
+    }
+    box.innerHTML = '';
+    friendsCache.forEach(item => {
+      const isMe = item.userid === myProfile.userId;
+      const row = document.createElement('div');
+      row.className = 'friend-row' + (isMe ? ' me' : '');
+      row.innerHTML =
+        (item.imgurl
+          ? `<img class="friend-avatar" src="${escapeAttr(item.imgurl)}">`
+          : `<div class="friend-avatar-fallback">${initials(item.realname)}</div>`) +
+        `<div class="friend-meta">
+           <div class="friend-real">${escapeHtml(item.realname)}</div>
+           <div class="friend-sub">${escapeHtml(item.displayname || '')}${item.nickname ? ' · ' + escapeHtml(item.nickname) : ''}</div>
+         </div>` +
+        (isMe ? '<span class="me-tag">ฉัน</span>' : '');
+      row.addEventListener('click', () => openCardDetail(item.userid, isMe));
+      box.appendChild(row);
+    });
+  }
+
+  function escapeHtml(str){
+    return String(str || '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  }
+  function escapeAttr(str){ return escapeHtml(str); }
+
+  async function openCardDetail(userid, isMe){
+    $('modalOverlay').classList.remove('hidden');
+    $('modalRealname').textContent = 'กำลังโหลด...';
+    $('modalNickname').textContent = '';
+    $('modalDisplayname').textContent = '-';
+    $('modalEmail').textContent = '-';
+    $('modalTel').textContent = '-';
+    $('modalOther').textContent = '-';
+    $('btnEditFromModal').classList.toggle('hidden', !isMe);
+
+    try{
+      const detail = await callApi('getCardDetail', { room: currentRoom, userid: userid });
+      if (!detail) {
+        $('modalRealname').textContent = 'ไม่พบข้อมูล';
+        return;
+      }
+      $('modalIdLabel').textContent = isMe ? 'MY DIGITAL BUSINESS CARD' : 'DIGITAL BUSINESS CARD';
+      $('modalRealname').textContent = detail.realname || '-';
+      $('modalNickname').textContent = detail.nickname ? ('ชื่อเล่น : ' + detail.nickname) : '';
+      $('modalDisplayname').textContent = detail.displayname || '-';
+      $('modalEmail').textContent = detail.email || '-';
+      $('modalTel').textContent = detail.tel || '-';
+      $('modalOther').textContent = detail.other || '-';
+      if (detail.imgurl) {
+        $('modalAvatar').src = detail.imgurl;
+        $('modalAvatar').classList.remove('hidden');
+        $('modalAvatarFallback').classList.add('hidden');
+      } else {
+        $('modalAvatarFallback').textContent = initials(detail.realname);
+        $('modalAvatarFallback').classList.remove('hidden');
+        $('modalAvatar').classList.add('hidden');
+      }
+      $('btnEditFromModal').onclick = () => {
+        fillForm(detail);
+        closeModal();
+        $('listPanel').classList.add('hidden');
+        $('myCardSection').classList.remove('hidden');
+        $('formPanel').classList.remove('hidden');
+        window.scrollTo({top:0, behavior:'smooth'});
+      };
+    } catch(err){
+      $('modalRealname').textContent = 'เกิดข้อผิดพลาด';
+    }
+  }
+
+  function closeModal(){ $('modalOverlay').classList.add('hidden'); }
+
+  // ---------- events ----------
+  $('btnSave').addEventListener('click', handleSave);
+  $('btnToggleFriends').addEventListener('click', loadFriendList);
+  $('btnBackToForm').addEventListener('click', () => {
+    $('listPanel').classList.add('hidden');
+    $('myCardSection').classList.remove('hidden');
+    $('formPanel').classList.remove('hidden');
+  });
+  $('modalCloseBtn').addEventListener('click', closeModal);
+  $('modalOverlay').addEventListener('click', (e) => { if (e.target.id === 'modalOverlay') closeModal(); });
+
+  boot();
+</script>
+</body>
+</html>
