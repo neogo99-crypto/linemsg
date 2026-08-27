@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบตรวจสอบสิทธิค่ารักษาพยาบาล</title>
+    <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -46,6 +48,7 @@
             box-shadow: var(--shadow);
             overflow: hidden;
             border: 1px solid rgba(226, 232, 240, 0.8);
+            position: relative;
         }
 
         /* Header Section */
@@ -75,6 +78,55 @@
 
         .app-body {
             padding: 24px;
+        }
+
+        /* Custom Alert Box */
+        .alert-box {
+            display: none;
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 14px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+            justify-content: space-between;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .alert-content i {
+            font-size: 1.2rem;
+            color: #ef4444;
+        }
+
+        .btn-close-alert {
+            background: none;
+            border: none;
+            color: #991b1b;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-close-alert:hover {
+            background-color: #fee2e2;
         }
 
         /* Search Section */
@@ -228,13 +280,28 @@
 <body>
 
     <div class="container">
+        <!-- App Header -->
         <div class="app-header">
             <i class="fa-solid fa-notes-medical"></i>
             <h1>สิทธิค่ารักษาพยาบาล</h1>
             <p>ตรวจสอบวงเงินสิทธิและการเบิกจ่ายพนักงาน</p>
         </div>
 
+        <!-- App Body -->
         <div class="app-body">
+            
+            <!-- Custom Notification Div -->
+            <div id="custom-alert" class="alert-box">
+                <div class="alert-content">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="alert-message">ข้อความแจ้งเตือน</span>
+                </div>
+                <button id="btn-close-alert" class="btn-close-alert" title="ปิด">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Search Input -->
             <div class="search-box">
                 <div class="input-group">
                     <i class="fa-solid fa-id-card"></i>
@@ -245,6 +312,7 @@
                 </button>
             </div>
 
+            <!-- Employee Info -->
             <div class="profile-card">
                 <div class="profile-avatar">
                     <i class="fa-solid fa-user"></i>
@@ -255,19 +323,23 @@
                 </div>
             </div>
 
+            <!-- Statistics Grid -->
             <div class="stats-grid">
+                <!-- Full Allowance -->
                 <div class="stat-card full">
                     <i class="fa-solid fa-wallet"></i>
                     <div class="title">ยอดเงินตามสิทธิ์</div>
                     <div class="value" id="mfull">-</div>
                 </div>
 
+                <!-- Used Allowance -->
                 <div class="stat-card used">
                     <i class="fa-solid fa-receipt"></i>
                     <div class="title">เบิกไปแล้ว</div>
                     <div class="value" id="muse">-</div>
                 </div>
 
+                <!-- Remaining Balance -->
                 <div class="stat-card balance">
                     <i class="fa-solid fa-piggy-bank"></i>
                     <div class="title">คงเหลือ</div>
@@ -277,11 +349,33 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         var ar = [];
 
+        // ฟังก์ชันสำหรับแสดงผลการแจ้งเตือน
+        function showAlert(msg) {
+            $("#alert-message").text(msg);
+            $("#custom-alert").css("display", "flex");
+            $("#empid").focus(); // นำ cursor กลับไปที่ input
+        }
+
+        // ฟังก์ชันสำหรับซ่อนการแจ้งเตือน
+        function hideAlert() {
+            $("#custom-alert").hide();
+            $("#empid").focus(); // นำ cursor กลับไปที่ input
+        }
+
         $(document).ready(function () {
+            // โฟกัส cursor ที่ช่องรหัสพนักงานเมื่อเปิดหน้าเว็บ
+            $("#empid").focus();
+
+            // กดปุ่มปิดการแจ้งเตือน
+            $("#btn-close-alert").click(function () {
+                hideAlert();
+            });
+
             // ดึงข้อมูลจาก Google Sheets CSV
             $.ajax({
                 url: "https://docs.google.com/spreadsheets/d/1h-p6CGib5rFLAXKoIz32mvlm6OkLS2HulInjibRlWH4/export?format=csv",
@@ -312,6 +406,7 @@
 
             // ค้นหาข้อมูล
             $("#btnsearch").click(function () {
+                hideAlert(); // ซ่อน alert เก่าก่อนค้นหาใหม่
                 var em_id = $("#empid").val().trim();
                 $("#empid").val("");
 
@@ -322,15 +417,19 @@
                         $("#mfull").html("-");
                         $("#muse").html("-");
                         $("#mbal").html("-");
-                        alert("ไม่พบข้อมูลรหัสพนักงานนี้");
+                        
+                        // แสดง div alert แทนการใช้อัลเลิร์ตเบราว์เซอร์
+                        showAlert("ค้นหารหัสพนักงานไม่พบ กรุณาตรวจสอบรหัสอีกครั้ง");
                     } else {
                         $("#ename").html(rs.fname + " " + rs.lname);
                         $("#mfull").html(rs.full + " ฿");
                         $("#muse").html(rs.use + " ฿");
                         $("#mbal").html(rs.bal + " ฿");
+                        $("#empid").focus(); // นำ cursor กลับไปรอพร้อมรับข้อมูลถัดไป
                     }
                 } else {
-                    alert("กรุณาเติมรหัสพนักงาน");
+                    // แสดง div alert เมื่อไม่ได้กรอกรหัสพนักงาน
+                    showAlert("กรุณากรอกรหัสพนักงานก่อนทำการค้นหา");
                 }
             });
         });
