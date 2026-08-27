@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบตรวจสอบสิทธิค่ารักษาพยาบาล</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #0284c7;
+            --primary-hover: #0369a1;
+            --bg-color: #f0f9ff;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Header Section */
+        .app-header {
+            background: linear-gradient(135deg, #0284c7 0%, #0d9488 100%);
+            color: #ffffff;
+            padding: 30px 24px;
+            text-align: center;
+        }
+
+        .app-header i {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .app-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 4px;
+            font-weight: 300;
+        }
+
+        .app-body {
+            padding: 24px;
+        }
+
+        /* Search Section */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            position: relative;
+            flex: 1;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-search {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e0f2fe;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .profile-info .label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .profile-info .name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Results Display Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 12px;
+        }
+
+        @media (min-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .stat-card {
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+        }
+
+        .stat-card.full {
+            border-top: 4px solid #3b82f6;
+        }
+        .stat-card.used {
+            border-top: 4px solid #ef4444;
+        }
+        .stat-card.balance {
+            border-top: 4px solid #10b981;
+            background: #f0fdf4;
+        }
+
+        .stat-card i {
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+        }
+
+        .stat-card.full i { color: #3b82f6; }
+        .stat-card.used i { color: #ef4444; }
+        .stat-card.balance i { color: #10b981; }
+
+        .stat-card .title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .stat-card .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .stat-card.balance .value {
+            color: #047857;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="app-header">
+            <i class="fa-solid fa-notes-medical"></i>
+            <h1>สิทธิค่ารักษาพยาบาล</h1>
+            <p>ตรวจสอบวงเงินสิทธิและการเบิกจ่ายพนักงาน</p>
+        </div>
+
+        <div class="app-body">
+            <div class="search-box">
+                <div class="input-group">
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" id="empid" placeholder="กรอกรหัสพนักงาน..." autocomplete="off" />
+                </div>
+                <button id="btnsearch" class="btn-search">
+                    <i class="fa-solid fa-magnifying-glass"></i> ค้นหา
+                </button>
+            </div>
+
+            <div class="profile-card">
+                <div class="profile-avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="profile-info">
+                    <div class="label">ชื่อ - นามสกุล</div>
+                    <div class="name" id="ename">-</div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card full">
+                    <i class="fa-solid fa-wallet"></i>
+                    <div class="title">ยอดเงินตามสิทธิ์</div>
+                    <div class="value" id="mfull">-</div>
+                </div>
+
+                <div class="stat-card used">
+                    <i class="fa-solid fa-receipt"></i>
+                    <div class="title">เบิกไปแล้ว</div>
+                    <div class="value" id="muse">-</div>
+                </div>
+
+                <div class="stat-card balance">
+                    <i class="fa-solid fa-piggy-bank"></i>
+                    <div class="title">คงเหลือ</div>
+                    <div class="value" id="mbal">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        var ar = [];
+
+        $(document).ready(function () {
+            // ดึงข้อมูลจาก Google Sheets CSV
+            $.ajax({
+                url: "https://docs.google.com/spreadsheets/d/1h-p6CGib5rFLAXKoIz32mvlm6OkLS2HulInjibRlWH4/export?format=csv",
+                datatype: "text",
+                success: function (data) {
+                    var dt = data.split(/\r?\n|\r/);
+                    dt.splice(0, 1); // ลบ Header row ออก
+                    dt.forEach((x) => {
+                        var p = x.split(",");
+                        ar.push({
+                            code: p[0],
+                            fname: p[1],
+                            lname: p[2],
+                            full: Number(p[3]).toLocaleString("en-US"),
+                            use: p[4] == "" ? "0" : Number(p[4]).toLocaleString("en-US"),
+                            bal: Number(p[5]).toLocaleString("en-US"),
+                        });
+                    });
+                },
+            });
+
+            // รองรับการกด Enter ในช่องกรอกรหัสพนักงาน
+            $("#empid").keypress(function (e) {
+                if (e.which == 13) {
+                    $("#btnsearch").click();
+                }
+            });
+
+            // ค้นหาข้อมูล
+            $("#btnsearch").click(function () {
+                var em_id = $("#empid").val().trim();
+                $("#empid").val("");
+
+                if (em_id != "") {
+                    var rs = ar.find((x) => x.code == em_id);
+                    if (typeof rs === "undefined") {
+                        $("#ename").html("<span style='color: #ef4444;'>ไม่พบข้อมูล</span>");
+                        $("#mfull").html("-");
+                        $("#muse").html("-");
+                        $("#mbal").html("-");
+                        alert("ไม่พบข้อมูลรหัสพนักงานนี้");
+                    } else {
+                        $("#ename").html(rs.fname + " " + rs.lname);
+                        $("#mfull").html(rs.full + " ฿");
+                        $("#muse").html(rs.use + " ฿");
+                        $("#mbal").html(rs.bal + " ฿");
+                    }
+                } else {
+                    alert("กรุณาเติมรหัสพนักงาน");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
