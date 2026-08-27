@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบตรวจสอบสิทธิค่ารักษาพยาบาล</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* ===== Design tokens ===== */
+            --bg: #eef5f1;
+            --surface: #ffffff;
+            --surface-alt: #e7f1eb;
+            --ink: #142622;
+            --ink-soft: #5c7169;
+            --ink-faint: #94a8a0;
+
+            --primary: #0e6e55;      /* deep emerald */
+            --primary-dark: #0a5744;
+            --primary-soft: #d9ede3;
+
+            --accent: #ff6b4a;       /* coral */
+            --accent-soft: #ffe4da;
+
+            --balance: #1f9d6c;      /* green */
+            --balance-soft: #e3f7ec;
+
+            --border: #dbe8e0;
+            --shadow-lg: 0 20px 45px -20px rgba(14, 60, 46, 0.35);
+            --shadow-sm: 0 6px 16px -8px rgba(14, 60, 46, 0.18);
+
+            --font-display: 'Kanit', sans-serif;
+            --font-body: 'Sarabun', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg);
+            background-image:
+                radial-gradient(circle at 12% 8%, rgba(14, 110, 85, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 88% 92%, rgba(255, 107, 74, 0.08) 0%, transparent 45%);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 460px;
+            background: var(--surface);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        /* ===================== Header ===================== */
+        .app-header {
+            position: relative;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            padding: 34px 28px 30px;
+            overflow: hidden;
+        }
+
+        .app-header::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .app-header::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -30px;
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .header-top {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 1;
+        }
+
+        .header-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .app-header h1 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+
+        .app-header p {
+            font-size: 0.82rem;
+            opacity: 0.85;
+            margin-top: 2px;
+            font-weight: 300;
+        }
+
+        /* ===================== Body ===================== */
+        .app-body {
+            padding: 26px 24px 28px;
+        }
+
+        .alert-box {
+            display: none;
+            background-color: var(--accent-soft);
+            border: 1px solid #ffc4ab;
+            color: #a13d20;
+            padding: 13px 14px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            animation: fadeIn 0.25s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+
+        .alert-content i { font-size: 1.05rem; color: var(--accent); }
+
+        .btn-close-alert {
+            background: none;
+            border: none;
+            color: #a13d20;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 4px 7px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .btn-close-alert:hover { background-color: #ffd4c1; }
+
+        /* Search */
+        .search-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+
+        .input-group {
+            position: relative;
+            flex: 1;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink-faint);
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            font-family: var(--font-body);
+            padding: 12px 14px 12px 40px;
+            border: 1.5px solid var(--border);
+            background: var(--bg);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            background: var(--surface);
+        }
+
+        .btn-search {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-search:hover { background-color: var(--primary-dark); }
+        .btn-search:active { transform: scale(0.97); }
+        .btn-search:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Profile */
+        .profile-card {
+            background: var(--bg);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 22px;
+            border: 1px solid var(--border);
+        }
+
+        .profile-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary-soft);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .profile-info .label {
+            font-size: 0.75rem;
+            color: var(--ink-soft);
+        }
+
+        .profile-info .name {
+            font-family: var(--font-display);
+            font-size: 1.02rem;
+            font-weight: 600;
+        }
+
+        /* Coverage ring */
+        .ring-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 0 22px;
+        }
+
+        .ring {
+            --pct: 0;
+            position: relative;
+            width: 176px;
+            height: 176px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent) calc(var(--pct) * 1%), var(--surface-alt) 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.6s ease;
+        }
+
+        .ring::before {
+            content: '';
+            position: absolute;
+            width: 138px;
+            height: 138px;
+            border-radius: 50%;
+            background: var(--surface);
+            box-shadow: inset 0 0 0 1px var(--border);
+        }
+
+        .ring-center {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .ring-center .rc-label {
+            font-size: 0.72rem;
+            color: var(--ink-soft);
+            margin-bottom: 3px;
+        }
+
+        .ring-center .rc-value {
+            font-family: var(--font-display);
+            font-size: 1.28rem;
+            font-weight: 700;
+            color: var(--balance);
+            line-height: 1.15;
+        }
+
+        .ring-center .rc-pct {
+            font-size: 0.68rem;
+            color: var(--ink-faint);
+            margin-top: 3px;
+        }
+
+        .ring-legend {
+            display: flex;
+            gap: 18px;
+            margin-top: 14px;
+            font-size: 0.78rem;
+            color: var(--ink-soft);
+        }
+
+        .ring-legend span { display: flex; align-items: center; gap: 6px; }
+
+        .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+        .dot.used { background: var(--accent); }
+        .dot.avail { background: var(--surface-alt); box-shadow: inset 0 0 0 1px var(--border); }
+
+        /* Stat chips */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-card {
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-card .stat-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .stat-card.full .stat-icon { background: var(--primary-soft); color: var(--primary); }
+        .stat-card.used .stat-icon { background: var(--accent-soft); color: var(--accent); }
+
+        .stat-card .title {
+            font-size: 0.72rem;
+            color: var(--ink-soft);
+            margin-bottom: 2px;
+        }
+
+        .stat-card .value {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        @media (max-width: 380px) {
+            .app-body { padding: 22px 18px 24px; }
+            .ring { width: 150px; height: 150px; }
+            .ring::before { width: 116px; height: 116px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="header-top">
+                <div class="header-icon"><i class="fa-solid fa-shield-heart"></i></div>
+                <div>
+                    <h1>สิทธิค่ารักษาพยาบาล</h1>
+                    <p>ตรวจสอบวงเงินสิทธิและการเบิกจ่ายพนักงาน</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="app-body">
+
+            <div id="custom-alert" class="alert-box">
+                <div class="alert-content">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <span id="alert-message">ข้อความแจ้งเตือน</span>
+                </div>
+                <button id="btn-close-alert" class="btn-close-alert" title="ปิด">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Search -->
+            <div class="search-box">
+                <div class="input-group">
+                    <i class="fa-solid fa-id-card"></i>
+                    <input type="text" id="empid" placeholder="กรอกรหัสพนักงาน..." autocomplete="off" />
+                </div>
+                <button id="btnsearch" class="btn-search">
+                    <i class="fa-solid fa-spinner fa-spin" id="loading-icon" style="display: none;"></i>
+                    <i class="fa-solid fa-magnifying-glass" id="search-icon"></i> ค้นหา
+                </button>
+            </div>
+
+            <!-- Employee -->
+            <div class="profile-card">
+                <div class="profile-avatar"><i class="fa-solid fa-user"></i></div>
+                <div class="profile-info">
+                    <div class="label">ชื่อ - นามสกุล</div>
+                    <div class="name" id="ename">-</div>
+                </div>
+            </div>
+
+            <!-- Coverage ring (signature element) -->
+            <div class="ring-wrap">
+                <div class="ring" id="ring">
+                    <div class="ring-center">
+                        <div class="rc-label">คงเหลือ</div>
+                        <div class="rc-value" id="mbal">-</div>
+                        <div class="rc-pct" id="ringpct">ยังไม่มีข้อมูล</div>
+                    </div>
+                </div>
+                <div class="ring-legend">
+                    <span><i class="dot avail"></i>สิทธิที่เหลือ</span>
+                    <span><i class="dot used"></i>เบิกไปแล้ว</span>
+                </div>
+            </div>
+
+            <!-- Chips -->
+            <div class="stats-grid">
+                <div class="stat-card full">
+                    <div class="stat-icon"><i class="fa-solid fa-wallet"></i></div>
+                    <div>
+                        <div class="title">ยอดเงินตามสิทธิ์</div>
+                        <div class="value" id="mfull">-</div>
+                    </div>
+                </div>
+
+                <div class="stat-card used">
+                    <div class="stat-icon"><i class="fa-solid fa-receipt"></i></div>
+                    <div>
+                        <div class="title">เบิกไปแล้ว</div>
+                        <div class="value" id="muse">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        var ar = [];
+        var isDataLoaded = false;
+
+        function showAlert(msg) {
+            $("#alert-message").text(msg);
+            $("#custom-alert").css("display", "flex");
+        }
+
+        function hideAlert() {
+            $("#custom-alert").hide();
+        }
+
+        function setRing(pct, hasData) {
+            var safePct = isNaN(pct) ? 0 : Math.max(0, Math.min(100, pct));
+            $("#ring").css("--pct", safePct);
+            $("#ringpct").text(hasData ? ("ใช้ไปแล้ว " + safePct.toFixed(0) + "%") : "ยังไม่มีข้อมูล");
+        }
+
+        // ฟังก์ชันแกะข้อมูล CSV แบบถูกต้อง รองรับอัญประกาศและคอมมาในตัวเลข
+        function parseCSV(text) {
+            var lines = text.split(/\r?\n/);
+            var parsedData = [];
+
+            for (var i = 1; i < lines.length; i++) { // ข้ามหัวตาราง (Row 0)
+                var line = lines[i].trim();
+                if (!line) continue;
+
+                var columns = [];
+                var insideQuote = false;
+                var currentVal = '';
+
+                for (var j = 0; j < line.length; j++) {
+                    var char = line[j];
+                    if (char === '"') {
+                        insideQuote = !insideQuote;
+                    } else if (char === ',' && !insideQuote) {
+                        columns.push(currentVal.trim());
+                        currentVal = '';
+                    } else {
+                        currentVal += char;
+                    }
+                }
+                columns.push(currentVal.trim());
+
+                if (columns.length >= 4) {
+                    var cleanStr = function(val) {
+                        return val ? val.replace(/^"|"$/g, '').trim() : '';
+                    };
+
+                    var cleanNum = function(val) {
+                        if (!val) return 0;
+                        var str = val.replace(/^"|"$/g, '').replace(/,/g, '').trim();
+                        return parseFloat(str) || 0;
+                    };
+
+                    var code = cleanStr(columns[0]);
+                    var fname = cleanStr(columns[1]);
+                    var lname = cleanStr(columns[2]);
+                    var fullRaw = cleanNum(columns[3]);
+                    var useRaw = cleanNum(columns[4]);
+                    
+                    // หากไม่ได้ใส่ยอดคงเหลือมา ให้คำนวณจาก fullRaw - useRaw
+                    var balRaw = columns[5] !== undefined ? cleanNum(columns[5]) : (fullRaw - useRaw);
+
+                    parsedData.push({
+                        code: code,
+                        fname: fname,
+                        lname: lname,
+                        full: fullRaw.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }),
+                        use: useRaw.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }),
+                        bal: balRaw.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }),
+                        fullRaw: fullRaw,
+                        useRaw: useRaw,
+                        balRaw: balRaw,
+                    });
+                }
+            }
+            return parsedData;
+        }
+
+        $(document).ready(function () {
+            $("#empid").focus();
+            setRing(0, false);
+
+            $("#btn-close-alert").click(function () {
+                hideAlert();
+                $("#empid").focus();
+            });
+
+            // แสดงสถานะกำลังดึงข้อมูล
+            $("#loading-icon").show();
+            $("#search-icon").hide();
+            $("#btnsearch").prop("disabled", true);
+
+            // ดึงข้อมูลจาก Google Sheets CSV
+            $.ajax({
+                url: "https://docs.google.com/spreadsheets/d/1h-p6CGib5rFLAXKoIz32mvlm6OkLS2HulInjibRlWH4/export?format=csv",
+                type: "GET",
+                dataType: "text",
+                success: function (data) {
+                    ar = parseCSV(data);
+                    isDataLoaded = true;
+                    $("#loading-icon").hide();
+                    $("#search-icon").show();
+                    $("#btnsearch").prop("disabled", false);
+                },
+                error: function (xhr, status, error) {
+                    $("#loading-icon").hide();
+                    $("#search-icon").show();
+                    showAlert("ไม่สามารถโหลดข้อมูลสิทธิพนักงานได้ กรุณาตรวจสอบอินเทอร์เน็ต");
+                }
+            });
+
+            $("#empid").keypress(function (e) {
+                if (e.which == 13) {
+                    $("#btnsearch").click();
+                }
+            });
+
+            $("#btnsearch").click(function () {
+                hideAlert();
+                var em_id = $("#empid").val().trim();
+
+                if (!isDataLoaded) {
+                    showAlert("กำลังโหลดข้อมูลพนักงาน กรุณารอสักครู่...");
+                    return;
+                }
+
+                if (em_id !== "") {
+                    // ค้นหาแบบตรงกันโดยตัดช่องว่างหน้า-หลังออก
+                    var rs = ar.find((x) => x.code.toLowerCase() === em_id.toLowerCase());
+
+                    if (!rs) {
+                        $("#ename").html("<span style='color: #ff6b4a;'>ไม่พบข้อมูล</span>");
+                        $("#mfull").html("-");
+                        $("#muse").html("-");
+                        $("#mbal").html("-");
+                        setRing(0, false);
+
+                        showAlert("ค้นหารหัสพนักงาน '" + em_id + "' ไม่พบ กรุณาตรวจสอบรหัสอีกครั้ง");
+                    } else {
+                        $("#ename").text(rs.fname + " " + rs.lname);
+                        $("#mfull").html(rs.full + " ฿");
+                        $("#muse").html(rs.use + " ฿");
+                        $("#mbal").html(rs.bal + " ฿");
+
+                        var pct = rs.fullRaw > 0 ? (rs.useRaw / rs.fullRaw) * 100 : 0;
+                        setRing(pct, true);
+                    }
+                } else {
+                    showAlert("กรุณากรอกรหัสพนักงานก่อนทำการค้นหา");
+                }
+                $("#empid").focus();
+            });
+        });
+    </script>
+</body>
+</html>
